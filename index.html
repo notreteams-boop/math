@@ -331,18 +331,16 @@
 //  CONFIGURATION
 //  Paste your Gemini API key below OR enter it in the UI
 // ─────────────────────────────────────────────────
-const GEMINI_API_KEY = "AIzaSyBMrbxYkUcSywFXBchnoragTozI36AD8OM";
+const GEMINI_API_KEY = "AIzaSyDv-5W5Tb0T5lVcy2DRzOZyjq80X3uiARs";
 
 const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
 const GEMINI_LIST  = "https://generativelanguage.googleapis.com/v1beta/models";
-// fallback order if auto-discovery fails
-const GEMINI_FALLBACK = [
+let GEMINI_MODELS = [
   "gemini-2.0-flash-lite",
   "gemini-2.0-flash",
-  "gemini-1.5-flash-8b",
-  "gemini-1.5-flash"
+  "gemini-2.5-flash",
+  "gemini-flash-lite-latest"
 ];
-let GEMINI_MODELS = [...GEMINI_FALLBACK];
 const KEY_STORAGE = "gemini_api_key";
 
 // ─────────────────────────────────────────────────
@@ -668,32 +666,46 @@ function hideError() {
 // ─────────────────────────────────────────────────
 async function discoverModels() {
   try {
-    const res = await fetch(`${GEMINI_LIST}?key=${apiKey}&pageSize=50`);
-    if (!res.ok) return; // keep fallback list
+    const res = await fetch(`${GEMINI_LIST}?key=${apiKey}&pageSize=100`);
+    if (!res.ok) throw new Error("list failed");
     const data = await res.json();
-    const available = (data.models || [])
+    const all = (data.models || [])
       .filter(m =>
-        m.supportedGenerationMethods &&
+        Array.isArray(m.supportedGenerationMethods) &&
         m.supportedGenerationMethods.includes("generateContent") &&
         m.name.includes("flash")
       )
-      .map(m => m.name.replace("models/", ""))
-      // prefer lite/small first (free tier), then larger
-      .sort((a, b) => {
-        const score = s => {
-          if (s.includes("8b")) return 0;
-          if (s.includes("lite")) return 1;
-          if (s.includes("1.5")) return 2;
-          if (s.includes("2.0")) return 3;
-          return 4;
-        };
-        return score(a) - score(b);
-      });
-    if (available.length > 0) {
-      GEMINI_MODELS = available;
+      .map(m => m.name.replace("models/", ""));
+
+    // sort: lite first, then by version descending
+    all.sort((a, b) => {
+      const score = s => {
+        if (s.includes("lite"))  return 0;
+        if (s.includes("8b"))    return 1;
+        if (s.includes("2.0"))   return 2;
+        if (s.includes("2.5"))   return 3;
+        if (s.includes("1.5"))   return 4;
+        return 5;
+      };
+      return score(a) - score(b);
+    });
+
+    if (all.length > 0) {
+      GEMINI_MODELS = all;
+      console.log("Discovered models:", GEMINI_MODELS);
+    } else {
+      throw new Error("no flash models found");
     }
   } catch (e) {
-    // silently keep fallback
+    console.warn("discoverModels failed, using hardcoded list:", e.message);
+    // hardcoded last-resort list with versioned names
+    GEMINI_MODELS = [
+      "gemini-2.0-flash-lite",
+      "gemini-2.0-flash",
+      "gemini-1.5-flash-8b-001",
+      "gemini-1.5-flash-002",
+      "gemini-1.5-flash-001"
+    ];
   }
 }
 
@@ -706,7 +718,6 @@ async function discoverModels() {
     showKeyScreen();
     return;
   }
-  await discoverModels();
   fetchNewAssignment();
 })();
 </script>
