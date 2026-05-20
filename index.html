@@ -676,7 +676,24 @@ function hideError() {
 // ─────────────────────────────────────────────────
 //  INIT
 // ─────────────────────────────────────────────────
-(function init() {
+(async function init() {
+  // Quick connectivity test
+  try {
+    const test = await fetch(WORKER_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: GEMINI_MODEL,
+        contents: [{ parts: [{ text: "Reply with exactly: OK" }] }],
+        generationConfig: { temperature: 0 }
+      })
+    });
+    const t = await test.text();
+    showError("DEBUG: status=" + test.status + " body=" + t.slice(0, 200));
+    setTimeout(hideError, 10000);
+  } catch(e) {
+    showError("DEBUG fetch failed: " + e.message);
+  }
   fetchNewAssignment();
 })();
 </script>
