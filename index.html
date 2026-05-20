@@ -331,9 +331,13 @@
 //  CONFIGURATION
 //  Paste your Gemini API key below OR enter it in the UI
 // ─────────────────────────────────────────────────
-const GEMINI_API_KEY = "PASTE_YOUR_KEY_HERE";
+const GEMINI_API_KEY = "AIzaSyBMrbxYkUcSywFXBchnoragTozI36AD8OM";
 
-const GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+const GEMINI_MODELS = [
+  "gemini-1.5-flash-8b",
+  "gemini-1.5-flash"
+];
+const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
 const KEY_STORAGE = "gemini_api_key";
 
 // ─────────────────────────────────────────────────
@@ -385,21 +389,39 @@ document.getElementById("key-save-btn").addEventListener("click", () => {
 // ─────────────────────────────────────────────────
 //  GEMINI API CALL
 // ─────────────────────────────────────────────────
-async function callGemini(prompt, plainText = false) {
-  const res = await fetch(`${GEMINI_URL}?key=${apiKey}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.9 }
-    })
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error((err.error && err.error.message) || `HTTP ${res.status}`);
+async function callGemini(prompt) {
+  let lastError = null;
+  for (const model of GEMINI_MODELS) {
+    try {
+      const url = `${GEMINI_BASE}${model}:generateContent?key=${apiKey}`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.9 }
+        })
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        const msg = (err.error && err.error.message) || `HTTP ${res.status}`;
+        // don't retry on auth errors
+        if (res.status === 400 || res.status === 401 || res.status === 403) {
+          throw new Error(msg);
+        }
+        lastError = new Error(msg);
+        continue;
+      }
+      const data = await res.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    } catch (e) {
+      if (e.message.includes("401") || e.message.includes("403") || e.message.includes("API key")) {
+        throw e;
+      }
+      lastError = e;
+    }
   }
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  throw lastError || new Error("Visi modeļi neatbildēja.");
 }
 
 // ─────────────────────────────────────────────────
