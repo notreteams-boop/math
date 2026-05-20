@@ -5,34 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Matemātika – Uzdevums</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;1,700&family=Source+Sans+3:wght@400;600&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --black: #111;
-    --gray: #444;
+    --black: #000;
+    --gray: #333;
     --light-gray: #e8e8e8;
     --green: #1a7a3c;
     --green-bg: #edf7f1;
     --red: #b81c1c;
     --red-bg: #fdf0f0;
     --border: #ccc;
-    --input-border: #aaa;
   }
 
   html, body {
     background: #fff;
     color: var(--black);
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 18px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
     min-height: 100vh;
   }
 
   .page {
-    max-width: 640px;
+    max-width: 700px;
     margin: 0 auto;
-    padding: 48px 32px 80px;
+    padding: 56px 40px 80px;
   }
 
   /* ── Loading state ── */
@@ -40,7 +37,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 14px;
+    gap: 16px;
     padding-top: 8px;
   }
 
@@ -48,7 +45,7 @@
     background: linear-gradient(90deg, #ebebeb 25%, #f5f5f5 50%, #ebebeb 75%);
     background-size: 200% 100%;
     animation: shimmer 1.4s infinite;
-    border-radius: 3px;
+    border-radius: 2px;
   }
 
   @keyframes shimmer {
@@ -56,131 +53,139 @@
     100% { background-position: -200% 0; }
   }
 
-  .sk-title  { width: 52%; height: 24px; }
-  .sk-intro  { width: 28%; height: 20px; margin-top: 6px; }
-  .sk-task   { width: 80%; height: 20px; margin-top: 18px; }
-  .sk-task2  { width: 72%; height: 20px; margin-top: 6px; }
+  .sk-title  { width: 55%; height: 26px; }
+  .sk-intro  { width: 30%; height: 22px; margin-top: 4px; }
+  .sk-task   { width: 75%; height: 22px; margin-top: 32px; }
+  .sk-task2  { width: 68%; height: 22px; margin-top: 40px; }
 
   /* ── Assignment block ── */
   #assignment { display: none; }
 
+  /* Title: "1. uzdevums" bold italic, "(2 punkti)" normal italic — same line */
   .task-header {
-    font-family: 'Source Serif 4', serif;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    font-style: normal;
+    line-height: 1.5;
+    margin-bottom: 2px;
+  }
+
+  .task-header .title-bold {
     font-weight: 700;
     font-style: italic;
-    font-size: 1.25rem;
-    line-height: 1.4;
-    margin-bottom: 4px;
+  }
+
+  .task-header .title-points {
+    font-weight: 400;
+    font-style: italic;
   }
 
   .task-intro {
-    font-family: 'Source Sans 3', sans-serif;
     font-size: 1rem;
     color: var(--black);
-    margin-bottom: 28px;
+    margin-bottom: 36px;
+    font-style: normal;
   }
 
+  /* Each task row: number+points on one line, expression below with big gap */
   .task-row {
+    margin-bottom: 40px;
+  }
+
+  .task-line {
     display: flex;
     align-items: baseline;
     flex-wrap: wrap;
-    gap: 6px 10px;
-    margin-bottom: 24px;
+    gap: 0 8px;
   }
 
-  .task-label {
-    font-family: 'Source Serif 4', serif;
-    font-style: italic;
+  .task-id {
+    font-style: normal;
+    font-weight: 400;
     font-size: 1rem;
-    color: var(--gray);
     white-space: nowrap;
-    min-width: 120px;
+  }
+
+  .task-pts {
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1rem;
+    white-space: nowrap;
   }
 
   .task-expr {
-    font-family: 'Source Serif 4', serif;
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     color: var(--black);
     white-space: nowrap;
+    font-style: normal;
   }
 
   .task-expr sup {
-    font-size: 0.7em;
+    font-size: 0.68em;
     vertical-align: super;
+    line-height: 0;
   }
 
   .task-expr sub {
-    font-size: 0.7em;
+    font-size: 0.68em;
     vertical-align: sub;
+    line-height: 0;
   }
 
   .eq-sign {
-    font-family: 'Source Serif 4', serif;
-    font-size: 1.05rem;
+    font-size: 1.15rem;
     color: var(--black);
-    padding: 0 2px;
+    padding: 0 4px;
   }
 
   .answer-input {
-    font-family: 'Source Sans 3', sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 1rem;
-    width: 72px;
+    width: 80px;
     border: none;
-    border-bottom: 2px solid var(--input-border);
+    border-bottom: 1.5px solid #999;
     outline: none;
     padding: 2px 4px;
     background: transparent;
     color: var(--black);
-    text-align: center;
+    text-align: left;
     transition: border-color 0.15s;
   }
 
-  .answer-input:focus {
-    border-bottom-color: var(--black);
-  }
-
-  .answer-input.correct {
-    border-bottom-color: var(--green);
-    color: var(--green);
-  }
-
-  .answer-input.wrong {
-    border-bottom-color: var(--red);
-    color: var(--red);
-  }
+  .answer-input:focus { border-bottom-color: var(--black); }
+  .answer-input.correct { border-bottom-color: var(--green); color: var(--green); }
+  .answer-input.wrong   { border-bottom-color: var(--red);   color: var(--red); }
 
   /* ── Buttons ── */
   .btn-row {
-    margin-top: 32px;
+    margin-top: 36px;
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
   }
 
   .btn {
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    padding: 9px 24px;
-    border: 2px solid var(--black);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.92rem;
+    font-weight: 400;
+    padding: 8px 22px;
+    border: 1.5px solid var(--black);
     background: #fff;
     color: var(--black);
     cursor: pointer;
-    letter-spacing: 0.01em;
     transition: background 0.12s, color 0.12s;
+    border-radius: 0;
   }
 
   .btn:hover { background: var(--black); color: #fff; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
   .btn:disabled:hover { background: #fff; color: var(--black); }
 
-  .btn-secondary {
-    border-color: var(--border);
-    color: var(--gray);
-  }
-  .btn-secondary:hover { background: var(--light-gray); color: var(--black); border-color: var(--border); }
+  .btn-secondary { border-color: #aaa; color: #555; }
+  .btn-secondary:hover { background: var(--light-gray); color: var(--black); border-color: #aaa; }
 
-  /* ── Results block ── */
+  /* ── Results ── */
   #results { display: none; margin-top: 32px; }
 
   .result-item {
@@ -188,44 +193,25 @@
     padding: 10px 14px;
     margin-bottom: 14px;
     font-size: 0.92rem;
-    line-height: 1.55;
+    line-height: 1.6;
   }
 
-  .result-item.ok {
-    border-color: var(--green);
-    background: var(--green-bg);
-    color: var(--green);
-  }
+  .result-item.ok  { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+  .result-item.err { border-color: var(--red);   background: var(--red-bg);   color: var(--red); }
 
-  .result-item.err {
-    border-color: var(--red);
-    background: var(--red-bg);
-    color: var(--red);
-  }
+  .result-label { font-weight: 600; margin-bottom: 3px; font-size: 0.95rem; }
 
-  .result-label {
-    font-weight: 600;
-    margin-bottom: 3px;
-    font-size: 0.95rem;
-  }
-
-  .result-explanation {
-    color: var(--gray);
-    font-size: 0.88rem;
-    margin-top: 5px;
-  }
-
-  .result-item.err .result-explanation { color: #8a0000; }
+  .result-explanation { color: #8a0000; font-size: 0.88rem; margin-top: 5px; }
 
   .spinner {
     display: inline-block;
-    width: 14px; height: 14px;
-    border: 2px solid var(--light-gray);
-    border-top-color: var(--gray);
+    width: 13px; height: 13px;
+    border: 2px solid #ddd;
+    border-top-color: #666;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
     vertical-align: middle;
-    margin-left: 8px;
+    margin-left: 7px;
   }
 
   @keyframes spin { to { transform: rotate(360deg); } }
@@ -236,13 +222,13 @@
     background: #fff3cd;
     border: 1px solid #ffc107;
     color: #7a5600;
-    padding: 12px 16px;
-    font-size: 0.9rem;
-    margin-bottom: 24px;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    margin-bottom: 20px;
     line-height: 1.5;
   }
 
-  /* ── Key input UI ── */
+  /* ── Key screen ── */
   #key-screen {
     display: none;
     flex-direction: column;
@@ -250,16 +236,12 @@
     padding-top: 8px;
   }
 
-  .key-label {
-    font-size: 0.95rem;
-    color: var(--gray);
-    line-height: 1.5;
-  }
+  .key-label { font-size: 0.92rem; color: var(--gray); line-height: 1.5; }
 
   .key-input {
-    font-family: 'Source Sans 3', sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 0.9rem;
-    border: 2px solid var(--border);
+    border: 1.5px solid var(--border);
     padding: 8px 12px;
     outline: none;
     width: 100%;
@@ -270,11 +252,10 @@
   .key-input:focus { border-color: var(--black); }
 
   /* ── Mobile ── */
-  @media (max-width: 480px) {
+  @media (max-width: 500px) {
     .page { padding: 32px 20px 60px; }
-    .task-label { min-width: 0; width: 100%; }
-    .task-row { gap: 4px 8px; }
-    .answer-input { width: 60px; }
+    .task-expr { font-size: 1.05rem; }
+    .answer-input { width: 64px; }
   }
 </style>
 </head>
@@ -432,8 +413,8 @@ async function callGemini(prompt) {
 // ─────────────────────────────────────────────────
 const GENERATION_PROMPT = `Tu esi matemātikas skolotājs Latvijā.
 Ģenerē vienu skolas uzdevumu ar diviem apakšuzdevumiem, izmantojot TIKAI šādu tematiku:
-1.1. Aprēķina pakāpes vērtību (jaudinājums ar veseliem vai parastiem skaitļiem, piem. 4^(1/2), 27^(1/3), 8^2, 5^0, 2^(-1) utt.)
-1.2. Aprēķina logaritma vērtību (log ar veselu atbildi, piem. log_2(8), log_5(25), log_3(27) utt.)
+1.1. Aprēķina pakāpes vērtību (veseli vai daļskaitļu kāpinātāji, piem. 4^(1/2), 27^(1/3), 8^2, 5^0, 2^(-1))
+1.2. Aprēķina logaritma vērtību (log ar veselu atbildi, piem. log_2(8), log_5(25), log_3(27))
 
 Atbildi TIKAI ar derīgu JSON bez nekāda markdown, bez papildteksta, bez komentāriem. Tieši šāda struktūra:
 {
@@ -444,8 +425,8 @@ Atbildi TIKAI ar derīgu JSON bez nekāda markdown, bez papildteksta, bez koment
       "id": "1.1.",
       "points": "(1 punkts)",
       "type": "power",
-      "expressionHtml": "16<sup>1/2</sup>",
-      "answer": "4"
+      "expressionHtml": "&#8730;25",
+      "answer": "5"
     },
     {
       "id": "1.2.",
@@ -457,10 +438,16 @@ Atbildi TIKAI ar derīgu JSON bez nekāda markdown, bez papildteksta, bez koment
   ]
 }
 
-Svarīgi:
-- expressionHtml var saturēt tikai <sup> un <sub> tagus un parastus simbolus.
-- answer ir tikai skaitlis vai vienkārša frakcija (piem. "1/2"), nekāds cits teksts.
-- Izvēlies JAUNAS vērtības katru reizi, neatkārto piemērus.
+Obligātie noteikumi par expressionHtml:
+- Kāpinātājs 1/2 → kvadrātsakne: &#8730;x  (piemērs: &#8730;49 nevis 49<sup>1/2</sup>)
+- Kāpinātājs 1/3 → kubsakne: &#8731;x  (piemērs: &#8731;27)
+- Kāpinātājs 1/4 → ceturtā sakne: <sup>4</sup>&#8730;x  (piemērs: <sup>4</sup>&#8730;16)
+- Vesels pozitīvs kāpinātājs: x<sup>n</sup>  (piemērs: 3<sup>4</sup>)
+- Negatīvs kāpinātājs: x<sup>-n</sup>  (piemērs: 2<sup>-3</sup>)
+- Nulle kāpinātājs: x<sup>0</sup>  (piemērs: 7<sup>0</sup>)
+- Logaritms: log<sub>b</sub>x  (piemērs: log<sub>2</sub>32)
+- answer ir tikai skaitlis vai vienkārša frakcija (piem. "1/8"), nekāds cits teksts.
+- Izvēlies JAUNAS vērtības katru reizi.
 - Uzdevumiem jābūt vienkāršiem un viennozīmīgiem.`;
 
 async function fetchNewAssignment() {
@@ -482,7 +469,20 @@ async function fetchNewAssignment() {
 // ─────────────────────────────────────────────────
 function renderAssignment(data) {
   currentTasks = data.tasks;
-  taskTitle.textContent = data.title;
+
+  // Title: bold italic "1. uzdevums" + italic "(2 punkti)"
+  // Expected format: "1. uzdevums (2 punkti)"
+  const titleEl = taskTitle;
+  const titleText = data.title; // e.g. "1. uzdevums (2 punkti)"
+  const parenIdx = titleText.indexOf("(");
+  if (parenIdx !== -1) {
+    const boldPart = titleText.slice(0, parenIdx).trim();
+    const italicPart = titleText.slice(parenIdx);
+    titleEl.innerHTML = `<span class="title-bold">${boldPart}</span> <span class="title-points">${italicPart}</span>`;
+  } else {
+    titleEl.innerHTML = `<span class="title-bold">${titleText}</span>`;
+  }
+
   taskIntro.textContent = data.intro;
 
   tasksContainer.innerHTML = "";
@@ -491,9 +491,24 @@ function renderAssignment(data) {
     row.className = "task-row";
     row.dataset.id = t.id;
 
-    const label = document.createElement("span");
-    label.className = "task-label";
-    label.textContent = `${t.id} ${t.points}`;
+    // Line 1: "1.1. (1 punkts)"
+    const topLine = document.createElement("div");
+    topLine.className = "task-line";
+
+    const idSpan = document.createElement("span");
+    idSpan.className = "task-id";
+    idSpan.textContent = t.id;
+
+    const ptsSpan = document.createElement("span");
+    ptsSpan.className = "task-pts";
+    ptsSpan.textContent = t.points;
+
+    topLine.append(idSpan, ptsSpan);
+
+    // Line 2: expression = input
+    const exprLine = document.createElement("div");
+    exprLine.className = "task-line";
+    exprLine.style.marginTop = "4px";
 
     const expr = document.createElement("span");
     expr.className = "task-expr";
@@ -501,7 +516,7 @@ function renderAssignment(data) {
 
     const eq = document.createElement("span");
     eq.className = "eq-sign";
-    eq.textContent = "=";
+    eq.textContent = " =";
 
     const inp = document.createElement("input");
     inp.type = "text";
@@ -512,7 +527,8 @@ function renderAssignment(data) {
     inp.setAttribute("spellcheck", "false");
     inp.addEventListener("keydown", e => { if (e.key === "Enter") checkBtn.click(); });
 
-    row.append(label, expr, eq, inp);
+    exprLine.append(expr, eq, inp);
+    row.append(topLine, exprLine);
     tasksContainer.appendChild(row);
   });
 
@@ -560,16 +576,31 @@ function normalize(val) {
   return val.replace(/\s/g, "").replace(",", ".").toLowerCase();
 }
 
+function htmlToText(html) {
+  return html
+    .replace(/&#8730;/g, "√")
+    .replace(/&#8731;/g, "∛")
+    .replace(/&#8732;/g, "∜")
+    .replace(/<sup>(.*?)<\/sup>/g, "^($1)")
+    .replace(/<sub>(.*?)<\/sub>/g, "₍$1₎")
+    .replace(/<[^>]+>/g, "")
+    .trim();
+}
+
 async function fetchExplanation(task, userAns) {
   const typeLabel = task.type === "power" ? "pakāpe" : "logaritms";
+  const exprReadable = htmlToText(task.expressionHtml);
   const prompt = `Tu esi matemātikas skolotājs. Skolēns risināja uzdevumu: aprēķina ${typeLabel}.
-Izteiksme: ${task.expressionHtml.replace(/<[^>]+>/g, "")}
+Izteiksme: ${exprReadable}
 Skolēna atbilde: ${userAns}
 Pareizā atbilde: ${task.answer}
 
-Uzraksti ĻOTI ĪSKU izskaidrojumu latviski (1-2 teikumi). Nekādas formulas, nekāds markdown, nekādi saraksti, nekāds treknraksts, nekas sarežģīts. Tikai vienkāršs teksts skolēnam. Beidz ar: Pareizā atbilde ir ${task.answer}.`;
+Uzraksti ĻOTI ĪSKU izskaidrojumu latviski (1-2 teikumi).
+Lietoj parastus matemātikas simbolus: √ priekš kvadrātsaknes, ∛ priekš kubsaknes, ^ priekš kāpinātāja.
+Nekāds markdown, nekāds treknraksts, nekādi saraksti, nekādi defisi, nekāds kods.
+Tikai vienkāršs teksts. Beidz ar: Pareizā atbilde ir ${task.answer}.`;
   try {
-    const text = await callGemini(prompt, true);
+    const text = await callGemini(prompt);
     return text.replace(/\*\*/g, "").replace(/\*/g, "").replace(/#{1,6}\s/g, "").replace(/`/g, "").trim();
   } catch {
     return `Pareizā atbilde ir ${task.answer}.`;
