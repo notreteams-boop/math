@@ -664,55 +664,10 @@ function hideError() {
 // ─────────────────────────────────────────────────
 //  AUTO-DISCOVER AVAILABLE MODELS
 // ─────────────────────────────────────────────────
-async function discoverModels() {
-  try {
-    const res = await fetch(`${GEMINI_LIST}?key=${apiKey}&pageSize=100`);
-    if (!res.ok) throw new Error("list failed");
-    const data = await res.json();
-    const all = (data.models || [])
-      .filter(m =>
-        Array.isArray(m.supportedGenerationMethods) &&
-        m.supportedGenerationMethods.includes("generateContent") &&
-        m.name.includes("flash")
-      )
-      .map(m => m.name.replace("models/", ""));
-
-    // sort: lite first, then by version descending
-    all.sort((a, b) => {
-      const score = s => {
-        if (s.includes("lite"))  return 0;
-        if (s.includes("8b"))    return 1;
-        if (s.includes("2.0"))   return 2;
-        if (s.includes("2.5"))   return 3;
-        if (s.includes("1.5"))   return 4;
-        return 5;
-      };
-      return score(a) - score(b);
-    });
-
-    if (all.length > 0) {
-      GEMINI_MODELS = all;
-      console.log("Discovered models:", GEMINI_MODELS);
-    } else {
-      throw new Error("no flash models found");
-    }
-  } catch (e) {
-    console.warn("discoverModels failed, using hardcoded list:", e.message);
-    // hardcoded last-resort list with versioned names
-    GEMINI_MODELS = [
-      "gemini-2.0-flash-lite",
-      "gemini-2.0-flash",
-      "gemini-1.5-flash-8b-001",
-      "gemini-1.5-flash-002",
-      "gemini-1.5-flash-001"
-    ];
-  }
-}
-
 // ─────────────────────────────────────────────────
 //  INIT
 // ─────────────────────────────────────────────────
-(async function init() {
+(function init() {
   apiKey = getApiKey();
   if (!apiKey) {
     showKeyScreen();
