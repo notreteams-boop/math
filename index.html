@@ -333,11 +333,16 @@
 // ─────────────────────────────────────────────────
 const GEMINI_API_KEY = "AIzaSyBMrbxYkUcSywFXBchnoragTozI36AD8OM";
 
-const GEMINI_MODELS = [
+const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
+const GEMINI_LIST  = "https://generativelanguage.googleapis.com/v1beta/models";
+// fallback order if auto-discovery fails
+const GEMINI_FALLBACK = [
+  "gemini-2.0-flash-lite",
+  "gemini-2.0-flash",
   "gemini-1.5-flash-8b",
   "gemini-1.5-flash"
 ];
-const GEMINI_BASE = "https://generativelanguage.googleapis.com/v1beta/models/";
+let GEMINI_MODELS = [...GEMINI_FALLBACK];
 const KEY_STORAGE = "gemini_api_key";
 
 // ─────────────────────────────────────────────────
@@ -659,14 +664,49 @@ function hideError() {
 }
 
 // ─────────────────────────────────────────────────
+//  AUTO-DISCOVER AVAILABLE MODELS
+// ─────────────────────────────────────────────────
+async function discoverModels() {
+  try {
+    const res = await fetch(`${GEMINI_LIST}?key=${apiKey}&pageSize=50`);
+    if (!res.ok) return; // keep fallback list
+    const data = await res.json();
+    const available = (data.models || [])
+      .filter(m =>
+        m.supportedGenerationMethods &&
+        m.supportedGenerationMethods.includes("generateContent") &&
+        m.name.includes("flash")
+      )
+      .map(m => m.name.replace("models/", ""))
+      // prefer lite/small first (free tier), then larger
+      .sort((a, b) => {
+        const score = s => {
+          if (s.includes("8b")) return 0;
+          if (s.includes("lite")) return 1;
+          if (s.includes("1.5")) return 2;
+          if (s.includes("2.0")) return 3;
+          return 4;
+        };
+        return score(a) - score(b);
+      });
+    if (available.length > 0) {
+      GEMINI_MODELS = available;
+    }
+  } catch (e) {
+    // silently keep fallback
+  }
+}
+
+// ─────────────────────────────────────────────────
 //  INIT
 // ─────────────────────────────────────────────────
-(function init() {
+(async function init() {
   apiKey = getApiKey();
   if (!apiKey) {
     showKeyScreen();
     return;
   }
+  await discoverModels();
   fetchNewAssignment();
 })();
 </script>
