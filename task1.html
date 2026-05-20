@@ -408,12 +408,20 @@ async function fetchNewAssignment() {
   hideError();
   try {
     const raw = await callGemini(GENERATION_PROMPT);
+    if (!raw) throw new Error("Tukša atbilde no servera.");
     const clean = raw.replace(/```json|```/gi, "").trim();
-    const data = JSON.parse(clean);
+    let data;
+    try {
+      data = JSON.parse(clean);
+    } catch(je) {
+      throw new Error("JSON kļūda: " + clean.slice(0, 100));
+    }
+    if (!data.tasks || !data.tasks.length) throw new Error("Nav uzdevumu atbildē.");
     renderAssignment(data);
   } catch (e) {
-    showError("Neizdevās ielādēt uzdevumu: " + e.message + " Mēģini vēlreiz.");
-    showAssignmentButtons();
+    hideLoading();
+    showError("Kļūda: " + e.message);
+    assignmentEl.style.display = "block";
   }
 }
 
