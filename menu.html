@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matemātika – Uzdevumi</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: #f4d5bb;
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
+  }
+
+  .page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 52px 40px 80px;
+  }
+
+  .page-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-style: italic;
+    margin-bottom: 6px;
+  }
+
+  .page-sub {
+    font-size: 0.95rem;
+    color: #555;
+    margin-bottom: 40px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .task-btn {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.88rem;
+    padding: 12px 14px;
+    border: 1.5px solid #000;
+    background: #f4d5bb;
+    color: #000;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+    line-height: 1.4;
+    transition: background 0.12s, color 0.12s;
+  }
+
+  .task-btn:hover {
+    background: #000;
+    color: #f4d5bb;
+  }
+
+  .task-btn .num {
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+    font-size: 0.78rem;
+    opacity: 0.6;
+  }
+
+  .task-btn.active {
+    border-color: #000;
+  }
+
+  .task-btn.inactive {
+    border-color: #bbb;
+    color: #aaa;
+    cursor: default;
+  }
+
+  .task-btn.inactive:hover {
+    background: #f4d5bb;
+    color: #aaa;
+  }
+
+  @media (max-width: 500px) {
+    .page { padding: 32px 20px 60px; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="page-title">Matemātikas uzdevumi</div>
+  <div class="page-sub">Izvēlies uzdevumu</div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const tasks = [
+  { num: 1, label: "Pakāpes un logaritmi",                      href: "index.html",  active: true },
+  { num: 2, label: "Darbības ar saknēm un eksponentvienādojumi", href: "task2.html",  active: false },
+  { num: 3, label: "Task 3",  href: "task3.html",  active: false },
+  { num: 4, label: "Task 4",  href: "task4.html",  active: false },
+  { num: 5, label: "Task 5",  href: "task5.html",  active: false },
+  { num: 6, label: "Task 6",  href: "task6.html",  active: false },
+  { num: 7, label: "Task 7",  href: "task7.html",  active: false },
+  { num: 8, label: "Task 8",  href: "task8.html",  active: false },
+  { num: 9, label: "Task 9",  href: "task9.html",  active: false },
+  { num: 10, label: "Task 10", href: "task10.html", active: false },
+  { num: 11, label: "Task 11", href: "task11.html", active: false },
+  { num: 12, label: "Task 12", href: "task12.html", active: false },
+  { num: 13, label: "Task 13", href: "task13.html", active: false },
+  { num: 14, label: "Task 14", href: "task14.html", active: false },
+  { num: 15, label: "Task 15", href: "task15.html", active: false },
+  { num: 16, label: "Task 16", href: "task16.html", active: false },
+  { num: 17, label: "Task 17", href: "task17.html", active: false },
+  { num: 18, label: "Task 18", href: "task18.html", active: false },
+  { num: 19, label: "Task 19", href: "task19.html", active: false },
+  { num: 20, label: "Task 20", href: "task20.html", active: false },
+  { num: 21, label: "Task 21", href: "task21.html", active: false },
+  { num: 22, label: "Task 22", href: "task22.html", active: false },
+  { num: 23, label: "Task 23", href: "task23.html", active: false },
+  { num: 24, label: "Task 24", href: "task24.html", active: false },
+  { num: 25, label: "Task 25", href: "task25.html", active: false },
+  { num: 26, label: "Task 26", href: "task26.html", active: false },
+  { num: 27, label: "Task 27", href: "task27.html", active: false },
+  { num: 28, label: "Task 28", href: "task28.html", active: false },
+  { num: 29, label: "Task 29", href: "task29.html", active: false },
+  { num: 30, label: "Task 30", href: "task30.html", active: false },
+  { num: 31, label: "Task 31", href: "task31.html", active: false },
+  { num: 32, label: "Task 32", href: "task32.html", active: false },
+  { num: 33, label: "Task 33", href: "task33.html", active: false },
+];
+
+const grid = document.getElementById("grid");
+
+tasks.forEach(function(t) {
+  const el = document.createElement(t.active ? "a" : "div");
+  el.className = "task-btn " + (t.active ? "active" : "inactive");
+  if (t.active) el.href = t.href;
+  el.innerHTML = "<span class='num'>[" + t.num + "]</span>" + t.label;
+  grid.appendChild(el);
+});
+</script>
+</body>
+</html>
