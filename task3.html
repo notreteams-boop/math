@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3. uzdevums – Funkcija</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #f4d5bb; color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 19px; min-height: 100vh; }
+  .page { max-width: 720px; margin: 0 auto; padding: 52px 40px 80px; }
+
+  #status { background: #fff3cd; border: 1px solid #ffc107; color: #7a5600; padding: 10px 14px; font-size: 0.85rem; margin-bottom: 20px; display: none; word-break: break-word; }
+
+  #loading { display: flex; flex-direction: column; gap: 16px; }
+  .sk { background: linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%); background-size: 200% 100%; animation: sh 1.4s infinite; border-radius: 2px; height: 22px; }
+  .sk1{width:55%} .sk2{width:30%} .sk3{width:80%;margin-top:10px} .sk4{width:65%} .sk5{width:90%;height:180px;margin-top:10px}
+  @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  #assignment { display: none; }
+  .task-header { font-size: 1.1rem; margin-bottom: 6px; }
+  .task-header b { font-weight: 700; font-style: italic; }
+  .task-header i { font-style: italic; font-weight: 400; }
+
+  .top-block { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 28px; flex-wrap: wrap; }
+  .func-desc { flex: 1; min-width: 180px; font-size: 0.95rem; line-height: 1.7; }
+  .func-desc .fdef { font-size: 1rem; margin: 4px 0; }
+  .frac { display: inline-flex; flex-direction: column; align-items: center; vertical-align: middle; margin: 0 3px; line-height: 1.2; }
+  .frac .num { border-bottom: 1.5px solid #000; padding: 0 4px; text-align: center; font-size: 0.9rem; }
+  .frac .den { padding: 0 4px; text-align: center; font-size: 0.9rem; }
+  canvas { border: 1px solid #ccc; background: #fff; max-width: 100%; }
+  .canvas-label { font-size: 0.75rem; color: #666; margin-top: 3px; text-align: center; }
+
+  .task-row { margin-bottom: 32px; }
+  .task-top { font-style: italic; font-size: 0.95rem; margin-bottom: 6px; }
+  .task-desc { font-size: 0.95rem; margin-bottom: 10px; line-height: 1.5; }
+  .task-desc i { font-style: italic; }
+
+  /* Multiple choice */
+  .choices { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .choice-btn { font-family: Arial, sans-serif; font-size: 0.88rem; padding: 7px 14px; border: 1.5px solid #000; background: #f4d5bb; cursor: pointer; text-align: left; transition: background 0.12s; }
+  .choice-btn:hover { background: #e8c5a5; }
+  .choice-btn.selected { background: #000; color: #f4d5bb; }
+
+  /* Text inputs */
+  .input-line { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .answer-input { font-family: Arial, sans-serif; font-size: 1rem; border: none; border-bottom: 1.5px solid #999; outline: none; padding: 2px 4px; background: transparent; }
+  .answer-input.short { width: 100px; }
+  .answer-input.long { width: 240px; }
+  .answer-input.text { width: 100%; max-width: 480px; }
+  .answer-input:focus { border-bottom-color: #000; }
+  .answer-input.ok { border-bottom-color: #1a7a3c; color: #1a7a3c; }
+  .answer-input.err { border-bottom-color: #b81c1c; color: #b81c1c; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+  .toolbar-btn { font-family: Arial, sans-serif; font-size: 0.85rem; padding: 4px 9px; border: 1px solid #999; background: #f4d5bb; cursor: pointer; }
+  .toolbar-btn:hover { background: #e8c5a5; }
+
+  .btn-row { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { font-family: Arial, sans-serif; font-size: 0.92rem; padding: 8px 22px; border: 1.5px solid #000; background: #fff; color: #000; cursor: pointer; text-decoration: none; display: inline-block; }
+  .btn:hover { background: #000; color: #fff; }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-sec { border-color: #aaa; color: #555; }
+  .btn-sec:hover { background: #eee; color: #000; border-color: #aaa; }
+  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid #ddd; border-top-color: #666; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-left: 7px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #results { display: none; margin-top: 32px; }
+  .score-line { font-size: 1rem; font-weight: 600; margin-bottom: 16px; }
+  .res-item { border-left: 3px solid transparent; padding: 10px 14px; margin-bottom: 12px; font-size: 0.9rem; line-height: 1.6; }
+  .res-item.ok { border-color: #1a7a3c; background: #edf7f1; color: #1a7a3c; }
+  .res-item.err { border-color: #b81c1c; background: #fdf0f0; color: #b81c1c; }
+  .res-item.partial { border-color: #e68a00; background: #fff8ec; color: #7a4400; }
+  .res-label { font-weight: 600; margin-bottom: 3px; }
+  .res-expl { font-size: 0.85rem; margin-top: 4px; color: #8a0000; }
+
+  @media (max-width: 500px) {
+    .page { padding: 28px 16px 60px; }
+    .top-block { flex-direction: column; }
+    canvas { width: 100% !important; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div id="status"></div>
+  <div id="loading">
+    <div class="sk sk1"></div>
+    <div class="sk sk2"></div>
+    <div class="sk sk3"></div>
+    <div class="sk sk4"></div>
+    <div class="sk sk5"></div>
+  </div>
+
+  <div id="assignment">
+    <div class="task-header"><b>3. uzdevums</b> <i>(4 punkti)</i></div>
+    <div class="top-block">
+      <div class="func-desc" id="func-desc"></div>
+      <div>
+        <canvas id="graph-canvas" width="240" height="220"></canvas>
+        <div class="canvas-label">1. att.</div>
+      </div>
+    </div>
+    <div id="tasks-container"></div>
+    <div class="btn-row">
+      <button class="btn" id="check-btn">Pārbaudīt</button>
+      <button class="btn btn-sec" id="new-btn">Jauns variants</button>
+    </div>
+    <div class="btn-row" style="margin-top:16px;">
+      <a href="index.html" class="btn btn-sec">Uz galveno izvēlni</a>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="task-header"><b>3. uzdevums</b> – <i>rezultāti</i></div>
+    <div class="score-line" id="score-line"></div>
+    <div id="results-container"></div>
+    <div class="btn-row">
+      <button class="btn btn-sec" id="back-btn">Atpakaļ</button>
+      <button class="btn btn-sec" id="new-btn-2">Jauns variants</button>
+    </div>
+    <div class="btn-row" style="margin-top:16px;">
+      <a href="index.html" class="btn btn-sec">Uz galveno izvēlni</a>
+    </div>
+  </div>
+</div>
+
+<script>
+window.onerror = function(msg, src, line) {
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("assignment").style.display = "block";
+  var s = document.getElementById("status");
+  s.textContent = "JS kļūda: " + msg + " (r." + line + ")";
+  s.style.display = "block";
+  return true;
+};
+
+const WORKER_URL = "https://floral-tree-d2cb.eusjs56999.workers.dev/";
+const GEMINI_MODEL = "gemini-2.5-flash";
+let currentTask = null;
+let selectedChoice = null;
+
+function showStatus(msg) { var e = document.getElementById("status"); e.textContent = msg; e.style.display = "block"; }
+function hideStatus() { document.getElementById("status").style.display = "none"; }
+
+async function callGemini(prompt) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 28000);
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST", signal: controller.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: GEMINI_MODEL, contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.8 } })
+    });
+    clearTimeout(timer);
+    const text = await res.text();
+    if (!res.ok) { let m = "HTTP " + res.status; try { m = JSON.parse(text).error.message; } catch(e){} throw new Error(m); }
+    const data = JSON.parse(text);
+    const r = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!r) throw new Error("Tukša atbilde.");
+    return r;
+  } catch(e) { clearTimeout(timer); if (e.name === "AbortError") throw new Error("Timeout."); throw e; }
+}
+
+// Generate f(x) = a/x + b  where a in {1,2} and b in {-1,-1/2,1/2,1}
+const PROMPT = `Tu esi matemātikas skolotājs Latvijā. Ģenerē uzdevumu par funkciju f(x) = a/x + b.
+
+Izvēlies vienu no šīm funkcijām (mainīgi):
+- f(x) = 1/x - 1/2   → Df=(-∞;0)∪(0;+∞), Ef=(-∞;-1/2)∪(-1/2;+∞), f(-2)=-1, pozitīvs x∈(0;2)
+- f(x) = 1/x + 1     → Df=(-∞;0)∪(0;+∞), Ef=(-∞;1)∪(1;+∞), f(-1)=0... hmm, f(2)=3/2, pozitīvs x∈(-∞;-1)∪(0;+∞) - too complex
+- f(x) = 2/x - 1     → Df=(-∞;0)∪(0;+∞), Ef=(-∞;-1)∪(-1;+∞), f(-2)=-2, pozitīvs x∈(0;2)
+- f(x) = 1/x - 2     → Df=(-∞;0)∪(0;+∞), Ef=(-∞;-2)∪(-2;+∞), f(-1)=-3, pozitīvs x∈(0;1/2)
+
+Atbildi TIKAI ar derīgu JSON bez markdown:
+{
+  "a": 1,
+  "b_num": -1,
+  "b_den": 2,
+  "funcText": "f(x) = 1/x − 1/2",
+  "funcHtml": "<span class='frac'><span class='num'>1</span><span class='den'>x</span></span> − <span class='frac'><span class='num'>1</span><span class='den'>2</span></span>",
+  "domain": "(−∞; 0) ∪ (0; +∞)",
+  "argForCalc": -2,
+  "calcAnswer": "-1",
+  "calcAnswerNum": -1,
+  "valueSetCorrect": "C",
+  "choices": [
+    {"val":"A","text":"(−∞; 0) ∪ (0; +∞)"},
+    {"val":"B","text":"(−∞; +2) ∪ (+2; +∞)"},
+    {"val":"C","text":"(−∞; −0,5) ∪ (−0,5; +∞)"},
+    {"val":"D","text":"(−∞; 0,5) ∪ (0,5; +∞)"}
+  ],
+  "explainOy": "Funkcijas grafiks nekrusto Oy asi, jo funkcija nav definēta, ja x = 0.",
+  "positiveInterval": "x ∈ (0; 2)",
+  "positiveAnswer": "(0;2)",
+  "positiveAlt": ["(0; 2)","x∈(0;2)","x ∈ (0; 2)"]
+}
+
+Izmanto JAUNAS vērtības (izvēlies citu funkciju). b_num un b_den — skaitītājs un saucējs b vērtībai (piem. b=-1/2 → b_num=-1, b_den=2). Ja b ir vesels — b_den=1.`;
+
+function drawGraph(a, bNum, bDen) {
+  const canvas = document.getElementById("graph-canvas");
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H / 2;
+  const scale = 28; // pixels per unit
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = "#ddd";
+  ctx.lineWidth = 0.5;
+  for (let i = -8; i <= 8; i++) {
+    ctx.beginPath();
+    ctx.moveTo(cx + i * scale, 0);
+    ctx.lineTo(cx + i * scale, H);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, cy + i * scale);
+    ctx.lineTo(W, cy + i * scale);
+    ctx.stroke();
+  }
+
+  // Asymptotes
+  ctx.strokeStyle = "#bbb";
+  ctx.setLineDash([4, 3]);
+  ctx.lineWidth = 1;
+  // x=0
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+  // y = b
+  const bVal = bNum / bDen;
+  ctx.beginPath(); ctx.moveTo(0, cy - bVal * scale); ctx.lineTo(W, cy - bVal * scale); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Axes
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+  // Arrows
+  ctx.beginPath(); ctx.moveTo(W - 6, cy - 4); ctx.lineTo(W, cy); ctx.lineTo(W - 6, cy + 4); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx - 4, 6); ctx.lineTo(cx, 0); ctx.lineTo(cx + 4, 6); ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = "#000";
+  ctx.font = "11px Arial";
+  ctx.fillText("x", W - 10, cy - 6);
+  ctx.fillText("y", cx + 5, 12);
+
+  // Tick numbers
+  ctx.font = "9px Arial";
+  ctx.fillStyle = "#555";
+  for (let i = -4; i <= 4; i++) {
+    if (i === 0) continue;
+    ctx.fillText(i, cx + i * scale - 4, cy + 12);
+    ctx.fillText(i, cx + 3, cy - i * scale + 3);
+  }
+
+  // Plot f(x) = a/x + b — two branches
+  ctx.strokeStyle = "#1a1a8c";
+  ctx.lineWidth = 2;
+
+  function toCanvas(x, y) { return [cx + x * scale, cy - y * scale]; }
+  function plotBranch(xStart, xEnd, step) {
+    let started = false;
+    for (let x = xStart; x <= xEnd; x += step) {
+      if (Math.abs(x) < 0.05) continue;
+      const y = a / x + bNum / bDen;
+      if (Math.abs(y) > 8) { started = false; continue; }
+      const [px, py] = toCanvas(x, y);
+      if (!started) { ctx.beginPath(); ctx.moveTo(px, py); started = true; }
+      else ctx.lineTo(px, py);
+    }
+    ctx.stroke();
+  }
+
+  plotBranch(-5, -0.1, 0.02);
+  plotBranch(0.1, 5, 0.02);
+
+  // f(x) label
+  ctx.fillStyle = "#1a1a8c";
+  ctx.font = "bold 10px Arial";
+  ctx.fillText("f(x)", cx + 3 * scale + 4, cy - (a / 3 + bNum / bDen) * scale - 6);
+}
+
+function buildToolbar(inputId, symbols) {
+  const inp = document.getElementById(inputId);
+  const tbId = "tb-" + inputId;
+  const tb = document.getElementById(tbId);
+  if (!tb || !inp) return;
+  tb.innerHTML = "";
+  symbols.forEach(function(s) {
+    const b = document.createElement("button");
+    b.className = "toolbar-btn";
+    b.textContent = s;
+    b.type = "button";
+    b.onclick = function() {
+      const start = inp.selectionStart, end = inp.selectionEnd;
+      inp.value = inp.value.slice(0, start) + s + inp.value.slice(end);
+      inp.focus();
+      inp.setSelectionRange(start + s.length, start + s.length);
+    };
+    tb.appendChild(b);
+  });
+}
+
+async function fetchNewAssignment() {
+  document.getElementById("loading").style.display = "flex";
+  document.getElementById("assignment").style.display = "none";
+  document.getElementById("results").style.display = "none";
+  selectedChoice = null;
+  hideStatus();
+  try {
+    const raw = await callGemini(PROMPT);
+    const clean = raw.replace(/```json/gi, "").replace(/```/gi, "").trim();
+    let data;
+    try { data = JSON.parse(clean); } catch(e) { throw new Error("JSON kļūda: " + clean.slice(0, 80)); }
+    if (!data.a || !data.choices || !data.positiveAnswer) throw new Error("Nepilnīga atbilde.");
+    currentTask = data;
+    renderAssignment(data);
+  } catch(e) {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("assignment").style.display = "block";
+    showStatus("Kļūda: " + e.message);
+  }
+}
+
+function renderAssignment(data) {
+  // Function description
+  const fd = document.getElementById("func-desc");
+  fd.innerHTML = "Dots (1. att.) funkcijas <i>f(x)</i> = " + data.funcHtml + " grafiks,<br>D(<i>f</i>) = " + data.domain + ".";
+
+  // Draw graph
+  drawGraph(data.a, data.b_num, data.b_den);
+
+  const container = document.getElementById("tasks-container");
+  container.innerHTML = "";
+
+  // 3.1 Calculate f(arg)
+  const row1 = document.createElement("div"); row1.className = "task-row";
+  row1.innerHTML = '<div class="task-top">3.1. <i>(1 punkts)</i> Aprēķini vai nosaki no grafika <i>f(' + data.argForCalc + ')</i> vērtību.</div>' +
+    '<div class="task-desc"><i>f</i>(' + data.argForCalc + ') = <input type="text" class="answer-input short" id="ans-31" autocomplete="off" inputmode="decimal" /></div>' +
+    '<div class="toolbar" id="tb-ans-31"></div>';
+  container.appendChild(row1);
+  buildToolbar("ans-31", ["-","0","1","2","3","4","5","6","7","8","9",".","/","½"]);
+
+  // 3.2 Value set — multiple choice
+  const row2 = document.createElement("div"); row2.className = "task-row";
+  row2.innerHTML = '<div class="task-top">3.2. <i>(1 punkts)</i> Dotās funkcijas vērtību kopa <i>E(f)</i> ir</div>';
+  const choicesDiv = document.createElement("div"); choicesDiv.className = "choices";
+  data.choices.forEach(function(c) {
+    const btn = document.createElement("button");
+    btn.className = "choice-btn";
+    btn.dataset.val = c.val;
+    btn.innerHTML = "<b>" + c.val + "</b>&ensp;" + c.text;
+    btn.onclick = function() {
+      choicesDiv.querySelectorAll(".choice-btn").forEach(function(b) { b.classList.remove("selected"); });
+      btn.classList.add("selected");
+      selectedChoice = c.val;
+    };
+    choicesDiv.appendChild(btn);
+  });
+  row2.appendChild(choicesDiv);
+  container.appendChild(row2);
+
+  // 3.3 Explain Oy axis
+  const row3 = document.createElement("div"); row3.className = "task-row";
+  row3.innerHTML = '<div class="task-top">3.3. <i>(1 punkts)</i> Paskaidro, kāpēc dotās funkcijas grafiks nekrusto <i>Oy</i> asi.</div>' +
+    '<input type="text" class="answer-input text" id="ans-33" autocomplete="off" placeholder="Tava atbilde..." />';
+  container.appendChild(row3);
+
+  // 3.4 Positive x interval
+  const row4 = document.createElement("div"); row4.className = "task-row";
+  row4.innerHTML = '<div class="task-top">3.4. <i>(1 punkts)</i> Nosaki visas tās argumenta <i>x</i> vērtības, ar kurām dotās funkcijas vērtības ir pozitīvas.</div>' +
+    '<div class="task-desc">x ∈ <input type="text" class="answer-input long" id="ans-34" autocomplete="off" /></div>' +
+    '<div class="toolbar" id="tb-ans-34"></div>';
+  container.appendChild(row4);
+  buildToolbar("ans-34", ["(",")",";","∞","-","0","1","2","3","4","5","6","7","8","9","∪","½"]);
+
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("assignment").style.display = "block";
+}
+
+function norm(v) { return v.trim().replace(/\s+/g,"").replace(/,/g,".").toLowerCase(); }
+
+function checkInterval(userAns, correctAns, alts) {
+  const u = norm(userAns).replace(/∞/g,"inf").replace(/∪/g,"u");
+  const all = [correctAns].concat(alts||[]).map(function(a){ return norm(a).replace(/∞/g,"inf").replace(/∪/g,"u"); });
+  return all.some(function(a){ return u === a; });
+}
+
+document.getElementById("check-btn").addEventListener("click", async function() {
+  const v31 = (document.getElementById("ans-31")||{}).value || "";
+  const v33 = (document.getElementById("ans-33")||{}).value || "";
+  const v34 = (document.getElementById("ans-34")||{}).value || "";
+
+  if (!v31.trim() || !selectedChoice || !v33.trim() || !v34.trim()) {
+    showStatus("Lūdzu, atbildi uz visiem uzdevumiem!"); return;
+  }
+  hideStatus();
+
+  const checkBtn = document.getElementById("check-btn");
+  checkBtn.disabled = true;
+  checkBtn.innerHTML = "Pārbauda<span class='spinner'></span>";
+  document.getElementById("new-btn").disabled = true;
+
+  // Check 3.1
+  const ok31 = norm(v31) === norm(currentTask.calcAnswer) ||
+               parseFloat(v31.replace(",",".")) === currentTask.calcAnswerNum;
+
+  // Check 3.2
+  const ok32 = selectedChoice === currentTask.valueSetCorrect;
+
+  // Check 3.3 via AI
+  let ok33 = false, expl33 = "";
+  try {
+    const p33 = "Skolēns paskaidro, kāpēc f(x)=" + currentTask.funcText + " grafiks nekrusto Oy asi.\n" +
+      "Skolēna atbilde: \"" + v33 + "\"\n" +
+      "Pareizā ideja: " + currentTask.explainOy + "\n" +
+      "Vai skolēna atbilde satur pareizo ideju (x=0 nav definīcijas apgabalā / funkcija nav definēta pie x=0)? Atbildi tikai ar YES vai NO.";
+    const r33 = await callGemini(p33);
+    ok33 = r33.trim().toUpperCase().startsWith("YES");
+    if (!ok33) expl33 = currentTask.explainOy;
+  } catch(e) {
+    ok33 = false; expl33 = currentTask.explainOy;
+  }
+
+  // Check 3.4
+  const ok34 = checkInterval(v34, currentTask.positiveAnswer, currentTask.positiveAlt);
+
+  const score = (ok31?1:0) + (ok32?1:0) + (ok33?1:0) + (ok34?1:0);
+  document.getElementById("score-line").textContent = "Rezultāts: " + score + " / 4";
+
+  // Render results
+  const rc = document.getElementById("results-container");
+  rc.innerHTML = "";
+
+  const items = [
+    { id:"3.1.", ok: ok31, ans: v31, correct: currentTask.calcAnswer, expl: ok31?"":"Pareizā atbilde: " + currentTask.calcAnswer + "." },
+    { id:"3.2.", ok: ok32, ans: selectedChoice, correct: currentTask.valueSetCorrect, expl: ok32?"":"Pareizā atbilde: " + currentTask.valueSetCorrect + "." },
+    { id:"3.3.", ok: ok33, ans: v33, correct: currentTask.explainOy, expl: expl33 },
+    { id:"3.4.", ok: ok34, ans: v34, correct: currentTask.positiveInterval, expl: ok34?"":"Pareizā atbilde: x ∈ " + currentTask.positiveInterval + "." }
+  ];
+
+  items.forEach(function(r) {
+    const div = document.createElement("div");
+    div.className = "res-item " + (r.ok ? "ok" : "err");
+    const label = document.createElement("div");
+    label.className = "res-label";
+    label.textContent = r.id + " " + r.ans;
+    div.appendChild(label);
+    if (r.ok) {
+      const ok = document.createElement("div"); ok.textContent = "Pareizi!"; div.appendChild(ok);
+    } else {
+      const ex = document.createElement("div"); ex.className = "res-expl"; ex.textContent = r.expl; div.appendChild(ex);
+    }
+    rc.appendChild(div);
+  });
+
+  document.getElementById("assignment").style.display = "none";
+  document.getElementById("results").style.display = "block";
+  checkBtn.disabled = false;
+  checkBtn.innerHTML = "Pārbaudīt";
+  document.getElementById("new-btn").disabled = false;
+});
+
+document.getElementById("back-btn").addEventListener("click", function() {
+  document.getElementById("results").style.display = "none";
+  document.getElementById("assignment").style.display = "block";
+});
+
+["ans-31","ans-33","ans-34"].forEach(function(id) {
+  var el = document.getElementById(id);
+  if (el) el.addEventListener("keydown", function(e) { if (e.key==="Enter") document.getElementById("check-btn").click(); });
+});
+
+[document.getElementById("new-btn"), document.getElementById("new-btn-2")].forEach(function(btn) {
+  btn.addEventListener("click", fetchNewAssignment);
+});
+
+fetchNewAssignment();
+</script>
+</body>
+</html>
