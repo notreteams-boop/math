@@ -11,76 +11,54 @@
 
   #status { background: #fff3cd; border: 1px solid #ffc107; color: #7a5600; padding: 10px 14px; font-size: 0.85rem; margin-bottom: 20px; display: none; word-break: break-word; }
 
+  #loading { display: flex; flex-direction: column; gap: 16px; }
+  .sk { background: linear-gradient(90deg,#e8c5a5 25%,#f4d5bb 50%,#e8c5a5 75%); background-size: 200% 100%; animation: sh 1.4s infinite; border-radius: 2px; height: 22px; }
+  .sk1{width:55%}.sk2{width:30%}.sk3{width:80%;margin-top:10px}.sk4{width:65%}.sk5{width:70%;margin-top:10px}.sk6{width:60%}
+  @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  #assignment { display: none; }
   .task-header { font-size: 1.1rem; margin-bottom: 4px; }
   .task-header b { font-weight: 700; font-style: italic; }
   .task-header i { font-style: italic; font-weight: 400; }
-  .task-intro { font-size: 1rem; margin-bottom: 36px; }
 
   .task-row { margin-bottom: 36px; }
   .task-top { font-style: italic; font-size: 1rem; margin-bottom: 6px; }
-  .task-desc { font-size: 1rem; margin-bottom: 10px; }
-
-  .task-expr { font-size: 1.15rem; margin-bottom: 10px; }
+  .task-desc { font-size: 1rem; margin-bottom: 8px; color: #333; }
+  .task-expr { font-size: 1.15rem; margin-bottom: 8px; }
   .task-expr sup { font-size: 0.65em; vertical-align: super; line-height: 0; }
   .task-expr sub { font-size: 0.65em; vertical-align: sub; line-height: 0; }
 
   /* Multiple choice */
-  .choices { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 10px; }
-  .choice-btn {
-    font-family: Arial, sans-serif;
-    font-size: 1rem;
-    padding: 8px 18px;
-    border: 1.5px solid #000;
-    background: #f4d5bb;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    transition: background 0.12s;
-  }
+  .choices { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+  .choice-btn { font-family: Arial, sans-serif; font-size: 0.95rem; padding: 8px 16px; border: 1.5px solid #000; background: #f4d5bb; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.12s; }
   .choice-btn:hover { background: #e8c5a5; }
   .choice-btn.selected { background: #000; color: #f4d5bb; }
-  .choice-btn.correct-ans { background: #1a7a3c; color: #fff; border-color: #1a7a3c; }
-  .choice-btn.wrong-ans { background: #b81c1c; color: #fff; border-color: #b81c1c; }
   .choice-letter { font-weight: 700; }
   .choice-expr sup { font-size: 0.65em; vertical-align: super; line-height: 0; }
   .choice-expr sub { font-size: 0.65em; vertical-align: sub; line-height: 0; }
 
   /* Text input */
   .input-line { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
-  .answer-input {
-    font-family: Arial, sans-serif; font-size: 1rem;
-    width: 140px; border: none; border-bottom: 1.5px solid #999;
-    outline: none; padding: 2px 4px; background: transparent;
-  }
+  .answer-input { font-family: Arial, sans-serif; font-size: 1rem; width: 150px; border: none; border-bottom: 1.5px solid #999; outline: none; padding: 2px 4px; background: transparent; }
   .answer-input:focus { border-bottom-color: #000; }
   .answer-input.ok { border-bottom-color: #1a7a3c; color: #1a7a3c; }
   .answer-input.err { border-bottom-color: #b81c1c; color: #b81c1c; }
 
-  /* Compare input */
+  /* Compare */
   .compare-line { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
   .compare-var { font-size: 1.1rem; font-style: italic; }
-  .compare-input {
-    font-family: Arial, sans-serif; font-size: 1.1rem;
-    width: 60px; border: none; border-bottom: 1.5px solid #999;
-    outline: none; padding: 2px 4px; background: transparent; text-align: center;
-  }
+  .compare-input { font-family: Arial, sans-serif; font-size: 1.1rem; width: 60px; border: none; border-bottom: 1.5px solid #999; outline: none; padding: 2px 4px; background: transparent; text-align: center; }
   .compare-input:focus { border-bottom-color: #000; }
   .compare-input.ok { border-bottom-color: #1a7a3c; color: #1a7a3c; }
   .compare-input.err { border-bottom-color: #b81c1c; color: #b81c1c; }
-  .compare-hint { font-size: 0.8rem; color: #777; margin-top: 4px; }
 
-  /* Special chars toolbar */
+  /* Toolbar */
   .toolbar { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-  .toolbar-btn {
-    font-family: Arial, sans-serif; font-size: 0.9rem;
-    padding: 4px 10px; border: 1px solid #999;
-    background: #f4d5bb; cursor: pointer; border-radius: 2px;
-  }
+  .toolbar-btn { font-family: Arial, sans-serif; font-size: 0.88rem; padding: 4px 9px; border: 1px solid #999; background: #f4d5bb; cursor: pointer; }
   .toolbar-btn:hover { background: #e8c5a5; }
 
   /* Buttons */
-  .btn-row { margin-top: 36px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-row { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
   .btn { font-family: Arial, sans-serif; font-size: 0.92rem; padding: 8px 22px; border: 1.5px solid #000; background: #f4d5bb; color: #000; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.12s, color 0.12s; }
   .btn:hover { background: #000; color: #f4d5bb; }
   .btn:disabled { opacity: 0.35; cursor: not-allowed; }
@@ -91,124 +69,47 @@
 
   /* Results */
   #results { display: none; margin-top: 8px; }
-  .res-item { border-left: 3px solid transparent; padding: 10px 14px; margin-bottom: 14px; font-size: 0.92rem; line-height: 1.6; background: #fff8f0; }
+  .res-item { border-left: 3px solid transparent; padding: 10px 14px; margin-bottom: 14px; font-size: 0.92rem; line-height: 1.6; }
   .res-item.ok { border-color: #1a7a3c; background: #edf7f1; color: #1a7a3c; }
   .res-item.err { border-color: #b81c1c; background: #fdf0f0; color: #b81c1c; }
   .res-label { font-weight: 600; margin-bottom: 3px; }
   .res-expl { font-size: 0.88rem; margin-top: 5px; color: #8a0000; }
 
-  @media (max-width: 500px) {
-    .page { padding: 32px 20px 60px; }
-    .choices { gap: 8px; }
-  }
+  @media (max-width: 500px) { .page { padding: 32px 20px 60px; } }
 </style>
 </head>
 <body>
 <div class="page">
   <div id="status"></div>
 
-  <!-- ASSIGNMENT -->
+  <div id="loading">
+    <div class="sk sk1"></div>
+    <div class="sk sk2"></div>
+    <div class="sk sk3"></div>
+    <div class="sk sk4"></div>
+    <div class="sk sk5"></div>
+    <div class="sk sk6"></div>
+  </div>
+
   <div id="assignment">
     <div class="task-header"><b>2. uzdevums</b> <i>(4 punkti)</i></div>
-    <div style="margin-bottom:32px;"></div>
-
-    <!-- 2.1 Multiple choice -->
-    <div class="task-row" id="row-21">
-      <div class="task-top">2.1. <i>(1 punkts)</i></div>
-      <div class="task-expr">
-        <sup>4</sup>√3 + <sup>4</sup>√3 =
-      </div>
-      <div class="choices" id="choices-21">
-        <button class="choice-btn" data-val="A" onclick="selectChoice('21','A',this)">
-          <span class="choice-letter">A</span>
-          <span class="choice-expr"><sup>8</sup>√6</span>
-        </button>
-        <button class="choice-btn" data-val="B" onclick="selectChoice('21','B',this)">
-          <span class="choice-letter">B</span>
-          <span class="choice-expr"><sup>16</sup>√3</span>
-        </button>
-        <button class="choice-btn" data-val="C" onclick="selectChoice('21','C',this)">
-          <span class="choice-letter">C</span>
-          <span class="choice-expr">2<sup>4</sup>√6</span>
-        </button>
-        <button class="choice-btn" data-val="D" onclick="selectChoice('21','D',this)">
-          <span class="choice-letter">D</span>
-          <span class="choice-expr">2<sup>4</sup>√3</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- 2.2 Text input -->
-    <div class="task-row" id="row-22">
-      <div class="task-top">2.2. <i>(1 punkts)</i> Iznes reizinātāju pirms saknes zīmes.</div>
-      <div class="input-line">
-        <span class="task-expr"><sup>3</sup>√8a</span>
-        <span style="font-size:1.1rem"> = </span>
-        <input type="text" class="answer-input" id="ans-22" placeholder="" autocomplete="off" />
-      </div>
-      <div class="toolbar" data-target="ans-22">
-        <button class="toolbar-btn" onclick="insertChar('ans-22','√')">√</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-22','∛')">∛</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-22','∜')">∜</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-22','²')">x²</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-22','³')">x³</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-22','½')">½</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-22','⅓')">⅓</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-22','⅛')">⅛</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-22','^')">^</button>
-      </div>
-    </div>
-
-    <!-- 2.3 Text input -->
-    <div class="task-row" id="row-23">
-      <div class="task-top">2.3. <i>(1 punkts)</i> Pārveido par pakāpi.</div>
-      <div class="input-line">
-        <span class="task-expr"><sup>8</sup>√a</span>
-        <span style="font-size:1.1rem"> = </span>
-        <input type="text" class="answer-input" id="ans-23" placeholder="" autocomplete="off" />
-      </div>
-      <div class="toolbar">
-        <button class="toolbar-btn" onclick="insertChar('ans-23','√')">√</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-23','²')">x²</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-23','³')">x³</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-23','½')">½</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-23','⅛')">⅛</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-23','^')">^</button>
-        <button class="toolbar-btn" onclick="insertChar('ans-23','(')"> ( </button>
-        <button class="toolbar-btn" onclick="insertChar('ans-23',')')"> ) </button>
-      </div>
-    </div>
-
-    <!-- 2.4 Compare -->
-    <div class="task-row" id="row-24">
-      <div class="task-top">2.4. <i>(1 punkts)</i> Salīdzini <i>a</i> un <i>b</i> vērtības, ja 0,8<sup>a</sup> &gt; 0,8<sup>b</sup>.</div>
-      <div class="compare-line">
-        <span class="compare-var">a</span>
-        <input type="text" class="compare-input" id="ans-24" maxlength="3" autocomplete="off" placeholder="?" />
-        <span class="compare-var">b</span>
-      </div>
-      <div class="toolbar" style="margin-top:8px;">
-        <button class="toolbar-btn" onclick="setCompare('<')"> &lt; </button>
-        <button class="toolbar-btn" onclick="setCompare('>')"> &gt; </button>
-        <button class="toolbar-btn" onclick="setCompare('=')"> = </button>
-      </div>
-      <div class="compare-hint">Ievadi: &lt;, &gt; vai =</div>
-    </div>
-
+    <div style="margin-bottom:28px;"></div>
+    <div id="tasks-container"></div>
     <div class="btn-row">
       <button class="btn" id="check-btn" onclick="checkAnswers()">Pārbaudīt</button>
+      <button class="btn btn-sec" id="new-btn" onclick="fetchAssignment()">Jauns variants</button>
     </div>
     <div class="btn-row" style="margin-top:14px;">
       <a href="index.html" class="btn btn-sec">Uz galveno izvēlni</a>
     </div>
   </div>
 
-  <!-- RESULTS -->
   <div id="results">
     <div class="task-header" style="margin-bottom:20px;"><b>2. uzdevums</b> – <i>rezultāti</i></div>
     <div id="results-container"></div>
     <div class="btn-row">
       <button class="btn btn-sec" onclick="goBack()">Atpakaļ</button>
+      <button class="btn btn-sec" onclick="fetchAssignment()">Jauns variants</button>
     </div>
     <div class="btn-row" style="margin-top:14px;">
       <a href="index.html" class="btn btn-sec">Uz galveno izvēlni</a>
@@ -220,109 +121,287 @@
 const WORKER_URL = "https://floral-tree-d2cb.eusjs56999.workers.dev/";
 const GEMINI_MODEL = "gemini-2.5-flash";
 
-// Correct answers
-const ANSWERS = {
-  "21": "D",
-  "22": ["2∛a", "2³√a", "2·∛a"],
-  "23": ["a^(1/8)", "a^1/8", "a½", "a^½", "a⅛"],
-  "24": ["<"]
-};
+var currentTasks = [];
+var selectedChoices = {};
 
-var selected = {};
+function showStatus(msg) { var e = document.getElementById("status"); e.textContent = msg; e.style.display = "block"; }
+function hideStatus() { document.getElementById("status").style.display = "none"; }
 
-function showStatus(msg) {
-  var el = document.getElementById("status");
-  el.textContent = msg;
-  el.style.display = "block";
-}
-function hideStatus() {
-  document.getElementById("status").style.display = "none";
-}
-
-function selectChoice(id, val, btn) {
-  document.querySelectorAll("#choices-" + id + " .choice-btn").forEach(function(b) {
-    b.classList.remove("selected");
-  });
-  btn.classList.add("selected");
-  selected[id] = val;
+async function callGemini(prompt) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25000);
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST", signal: controller.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: GEMINI_MODEL, contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.9 } })
+    });
+    clearTimeout(timer);
+    const text = await res.text();
+    if (!res.ok) { let m = "HTTP " + res.status; try { m = JSON.parse(text).error.message; } catch(e){} throw new Error(m); }
+    const data = JSON.parse(text);
+    const r = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
+    if (!r) throw new Error("Tukša atbilde: " + text.slice(0,150));
+    return r;
+  } catch(e) { clearTimeout(timer); if (e.name === "AbortError") throw new Error("Timeout. Pārbaudi internetu."); throw e; }
 }
 
-function insertChar(inputId, char) {
-  var inp = document.getElementById(inputId);
-  var start = inp.selectionStart;
-  var end = inp.selectionEnd;
-  inp.value = inp.value.slice(0, start) + char + inp.value.slice(end);
-  inp.focus();
-  inp.setSelectionRange(start + char.length, start + char.length);
+const PROMPT = `Tu esi matemātikas skolotājs Latvijā. Ģenerē uzdevumu par saknēm un pakāpēm ar 4 apakšuzdevumiem.
+
+Katram apakšuzdevumam ir tips:
+- "choice" — izvēlies pareizo atbildi (4 varianti A,B,C,D)
+- "simplify" — iznes reizinātāju pirms saknes zīmes (piem. ³√8a → 2³√a)
+- "power" — pārveido par pakāpi (piem. ⁸√a → a^(1/8))
+- "compare" — salīdzini ar < > = (piem. ja 0.8^a > 0.8^b → a < b)
+
+Atbildi TIKAI ar derīgu JSON bez markdown:
+{
+  "tasks": [
+    {
+      "id": "2.1.",
+      "points": "(1 punkts)",
+      "type": "choice",
+      "desc": "",
+      "expressionHtml": "<sup>4</sup>√3 + <sup>4</sup>√3",
+      "choices": [
+        {"val":"A","html":"<sup>8</sup>√6"},
+        {"val":"B","html":"<sup>16</sup>√3"},
+        {"val":"C","html":"2<sup>4</sup>√6"},
+        {"val":"D","html":"2<sup>4</sup>√3"}
+      ],
+      "answer": "D",
+      "answerDisplay": "2·⁴√3"
+    },
+    {
+      "id": "2.2.",
+      "points": "(1 punkts)",
+      "type": "simplify",
+      "desc": "Iznes reizinātāju pirms saknes zīmes.",
+      "expressionHtml": "<sup>3</sup>√8a",
+      "answer": "2∛a",
+      "answerAlt": ["2³√a","2·∛a","2·³√a"],
+      "answerDisplay": "2·³√a"
+    },
+    {
+      "id": "2.3.",
+      "points": "(1 punkts)",
+      "type": "power",
+      "desc": "Pārveido par pakāpi.",
+      "expressionHtml": "<sup>8</sup>√a",
+      "answer": "a^(1/8)",
+      "answerAlt": ["a^1/8","a⅛"],
+      "answerDisplay": "a^(1/8)"
+    },
+    {
+      "id": "2.4.",
+      "points": "(1 punkts)",
+      "type": "compare",
+      "desc": "Salīdzini a un b vērtības.",
+      "expressionHtml": "0,8<sup>a</sup> &gt; 0,8<sup>b</sup>",
+      "leftVar": "a",
+      "rightVar": "b",
+      "answer": "<",
+      "answerDisplay": "a < b"
+    }
+  ]
 }
 
-function setCompare(val) {
-  var inp = document.getElementById("ans-24");
-  inp.value = val;
-  inp.focus();
-}
+Izmanto JAUNAS vērtības katrā variantā. Saglabā tieši šo struktūru un šos 4 tipus šajā secībā.`;
 
-function normalize(v) {
-  return v.trim().replace(/\s+/g, "").toLowerCase();
-}
-
-function checkMatch(userVal, correct) {
-  if (Array.isArray(correct)) {
-    return correct.some(function(c) { return normalize(userVal) === normalize(c); });
+async function fetchAssignment() {
+  document.getElementById("loading").style.display = "flex";
+  document.getElementById("assignment").style.display = "none";
+  document.getElementById("results").style.display = "none";
+  hideStatus();
+  selectedChoices = {};
+  try {
+    const raw = await callGemini(PROMPT);
+    const clean = raw.replace(/```json/gi,"").replace(/```/gi,"").trim();
+    let data;
+    try { data = JSON.parse(clean); } catch(e) { throw new Error("JSON kļūda: " + clean.slice(0,100)); }
+    if (!data.tasks || data.tasks.length < 4) throw new Error("Nepietiekami uzdevumi atbildē.");
+    currentTasks = data.tasks;
+    renderAssignment();
+  } catch(e) {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("assignment").style.display = "block";
+    showStatus("Kļūda: " + e.message);
   }
-  return normalize(userVal) === normalize(correct);
 }
 
-async function getExplanation(taskId, userAns, correctAns) {
-  const explanations = {
-    "21": "Saskaitot vienādas saknes, reizinātājs palielinās: ⁴√3 + ⁴√3 = 2·⁴√3. Pareizā atbilde ir D.",
-    "22": "³√8a = ³√8 · ³√a = 2·³√a. Skaitļa 8 kubsakne ir 2. Pareizā atbilde ir 2∛a.",
-    "23": "⁸√a = a^(1/8) — sakne ir pakāpe ar daļskaitļu kāpinātāju. Pareizā atbilde ir a^(1/8).",
-    "24": "Ja bāze 0,8 < 1, tad pakāpe ir lejupejoša funkcija: jo lielāks kāpinātājs, jo mazāka vērtība. 0,8ᵃ > 0,8ᵇ nozīmē a < b."
-  };
-  return explanations[taskId] || "Pareizā atbilde ir " + (Array.isArray(correctAns) ? correctAns[0] : correctAns) + ".";
+function renderAssignment() {
+  const container = document.getElementById("tasks-container");
+  container.innerHTML = "";
+
+  currentTasks.forEach(function(t) {
+    const row = document.createElement("div");
+    row.className = "task-row";
+
+    const top = document.createElement("div");
+    top.className = "task-top";
+    top.textContent = t.id + " " + t.points;
+    row.appendChild(top);
+
+    if (t.desc) {
+      const desc = document.createElement("div");
+      desc.className = "task-desc";
+      desc.textContent = t.desc;
+      row.appendChild(desc);
+    }
+   
+function renderAssignment() {
+  const container = document.getElementById("tasks-container");
+  container.innerHTML = "";
+
+  currentTasks.forEach(function(t) {
+    const row = document.createElement("div");
+    row.className = "task-row";
+
+    const top = document.createElement("div");
+    top.className = "task-top";
+    top.textContent = t.id + " " + t.points;
+    row.appendChild(top);
+
+    if (t.desc) {
+      const desc = document.createElement("div");
+      desc.className = "task-desc";
+      desc.textContent = t.desc;
+      row.appendChild(desc);
+    }
+
+    const expr = document.createElement("div");
+    expr.className = "task-expr";
+    expr.innerHTML = t.expressionHtml + (t.type !== "compare" && t.type !== "choice" ? " =" : "");
+    row.appendChild(expr);
+
+    if (t.type === "choice") {
+      const choices = document.createElement("div");
+      choices.className = "choices";
+      choices.id = "choices-" + t.id;
+      (t.choices || []).forEach(function(c) {
+        const btn = document.createElement("button");
+        btn.className = "choice-btn";
+        btn.dataset.val = c.val;
+        btn.innerHTML = "<span class='choice-letter'>" + c.val + "</span><span class='choice-expr'>" + c.html + "</span>";
+        btn.onclick = function() {
+          choices.querySelectorAll(".choice-btn").forEach(function(b) { b.classList.remove("selected"); });
+          btn.classList.add("selected");
+          selectedChoices[t.id] = c.val;
+        };
+        choices.appendChild(btn);
+      });
+      row.appendChild(choices);
+
+    } else if (t.type === "compare") {
+      const line = document.createElement("div");
+      line.className = "compare-line";
+      line.innerHTML = "<span class='compare-var'>" + (t.leftVar||"a") + "</span>";
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.className = "compare-input";
+      inp.id = "ans-" + t.id;
+      inp.maxLength = 3;
+      inp.autocomplete = "off";
+      line.appendChild(inp);
+      line.innerHTML += "<span class='compare-var'>" + (t.rightVar||"b") + "</span>";
+      row.appendChild(line);
+      const tb = document.createElement("div");
+      tb.className = "toolbar";
+      ["<",">","="].forEach(function(s) {
+        const b = document.createElement("button");
+        b.className = "toolbar-btn";
+        b.textContent = s;
+        b.onclick = function() { inp.value = s; };
+        tb.appendChild(b);
+      });
+      row.appendChild(tb);
+
+    } else {
+      const inputId = "ans-" + t.id;
+      const line = document.createElement("div");
+      line.className = "input-line";
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.className = "answer-input";
+      inp.id = inputId;
+      inp.autocomplete = "off";
+      line.appendChild(inp);
+      row.appendChild(line);
+      const tb = document.createElement("div");
+      tb.className = "toolbar";
+      ["√","∛","∜","²","³","⁴","½","⅓","⅛","^","(",")","·"].forEach(function(s) {
+        const b = document.createElement("button");
+        b.className = "toolbar-btn";
+        b.textContent = s;
+        b.onclick = function() {
+          const el = document.getElementById(inputId);
+          const start = el.selectionStart, end = el.selectionEnd;
+          el.value = el.value.slice(0,start) + s + el.value.slice(end);
+          el.focus();
+          el.setSelectionRange(start+s.length, start+s.length);
+        };
+        tb.appendChild(b);
+      });
+      row.appendChild(tb);
+    }
+
+    container.appendChild(row);
+  });
+
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("assignment").style.display = "block";
+}
+
+function getUserAnswer(t) {
+  if (t.type === "choice") return selectedChoices[t.id] || "";
+  return (document.getElementById("ans-" + t.id) || {}).value || "";
+}
+
+function checkCorrect(userAns, t) {
+  const u = userAns.trim().replace(/\s+/g,"").toLowerCase();
+  const correct = [t.answer].concat(t.answerAlt || []).map(function(a){ return a.trim().replace(/\s+/g,"").toLowerCase(); });
+  return correct.indexOf(u) !== -1;
+}
+
+async function getExplanation(t, userAns) {
+  const prompt = "Tu esi matemātikas skolotājs. Skolēns risināja uzdevumu par saknēm un pakāpēm.\n" +
+    "Uzdevums: " + t.expressionHtml.replace(/<[^>]+>/g,"") + (t.desc ? " (" + t.desc + ")" : "") + "\n" +
+    "Skolēna atbilde: " + userAns + "\n" +
+    "Pareizā atbilde: " + t.answerDisplay + "\n\n" +
+    "Uzraksti ĻOTI ĪSKU izskaidrojumu latviski (1-2 teikumi). Izmanto matemātiskos simbolus: ² ³ ⁴ √ ∛ ∜ · < > =\n" +
+    "Nekāds markdown, nekāds treknraksts. Tikai vienkāršs teksts. Beidz ar: Pareizā atbilde ir " + t.answerDisplay + ".";
+  try {
+    const text = await callGemini(prompt);
+    return text.replace(/\*\*/g,"").replace(/\*/g,"").replace(/`/g,"").trim();
+  } catch(e) {
+    return "Pareizā atbilde ir " + t.answerDisplay + ".";
+  }
 }
 
 async function checkAnswers() {
   hideStatus();
   var missing = false;
-  if (!selected["21"]) missing = true;
-  if (!document.getElementById("ans-22").value.trim()) missing = true;
-  if (!document.getElementById("ans-23").value.trim()) missing = true;
-  if (!document.getElementById("ans-24").value.trim()) missing = true;
+  currentTasks.forEach(function(t) { if (!getUserAnswer(t)) missing = true; });
   if (missing) { showStatus("Lūdzu, atbildi uz visiem uzdevumiem!"); return; }
 
-  var checkBtn = document.getElementById("check-btn");
+  const checkBtn = document.getElementById("check-btn");
   checkBtn.disabled = true;
   checkBtn.innerHTML = "Pārbauda<span class='spinner'></span>";
+  document.getElementById("new-btn").disabled = true;
 
-  var tasks = [
-    { id: "21", userAns: selected["21"] || "", correct: ANSWERS["21"] },
-    { id: "22", userAns: document.getElementById("ans-22").value, correct: ANSWERS["22"] },
-    { id: "23", userAns: document.getElementById("ans-23").value, correct: ANSWERS["23"] },
-    { id: "24", userAns: document.getElementById("ans-24").value, correct: ANSWERS["24"] }
-  ];
+  const rc = document.getElementById("results-container");
+  rc.innerHTML = "";
 
-  var resultsContainer = document.getElementById("results-container");
-  resultsContainer.innerHTML = "";
-
-  var labels = {
-    "21": "2.1. ⁴√3 + ⁴√3",
-    "22": "2.2. ³√8a",
-    "23": "2.3. ⁸√a",
-    "24": "2.4. 0,8ᵃ > 0,8ᵇ → a __ b"
-  };
-
-  for (var i = 0; i < tasks.length; i++) {
-    var t = tasks[i];
-    var correct = checkMatch(t.userAns, t.correct);
+  for (var i = 0; i < currentTasks.length; i++) {
+    var t = currentTasks[i];
+    var userAns = getUserAnswer(t);
+    var correct = checkCorrect(userAns, t);
 
     var div = document.createElement("div");
     div.className = "res-item " + (correct ? "ok" : "err");
-
     var label = document.createElement("div");
     label.className = "res-label";
-    label.textContent = labels[t.id] + " = " + t.userAns;
+    label.textContent = t.id + " Tavā atbilde: " + userAns;
     div.appendChild(label);
 
     if (correct) {
@@ -332,30 +411,26 @@ async function checkAnswers() {
     } else {
       var expl = document.createElement("div");
       expl.className = "res-expl";
-      expl.textContent = await getExplanation(t.id, t.userAns, t.correct);
+      expl.textContent = await getExplanation(t, userAns);
       div.appendChild(expl);
     }
-
-    resultsContainer.appendChild(div);
+    rc.appendChild(div);
   }
 
   document.getElementById("assignment").style.display = "none";
   document.getElementById("results").style.display = "block";
   checkBtn.disabled = false;
   checkBtn.innerHTML = "Pārbaudīt";
+  document.getElementById("new-btn").disabled = false;
 }
 
 function goBack() {
   document.getElementById("results").style.display = "none";
   document.getElementById("assignment").style.display = "block";
-  // reset styles
-  document.querySelectorAll(".answer-input, .compare-input").forEach(function(inp) {
-    inp.classList.remove("ok", "err");
-  });
-  document.querySelectorAll(".choice-btn").forEach(function(btn) {
-    btn.classList.remove("correct-ans", "wrong-ans");
-  });
+  document.querySelectorAll(".answer-input, .compare-input").forEach(function(inp) { inp.classList.remove("ok","err"); });
 }
+
+fetchAssignment();
 </script>
 </body>
 </html>
