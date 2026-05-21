@@ -209,7 +209,7 @@ function renderAssignment(data) {
     inp.type = "text";
     inp.className = "answer-input";
     inp.dataset.taskId = t.id;
-    inp.setAttribute("inputmode", "decimal");
+    inp.setAttribute("inputmode", "text");
     inp.setAttribute("autocomplete", "off");
     inp.addEventListener("keydown", function(e) { if (e.key === "Enter") checkBtn.click(); });
     line.append(expr, eq, inp);
