@@ -154,7 +154,7 @@ async function callGemini(prompt) {
   } catch(e) { clearTimeout(timer); if (e.name === "AbortError") throw new Error("Timeout. Pārbaudi internetu."); throw e; }
 }
 
-const PROMPT = `Tu esi matemātikas skolotājs Latvijā. Ģenerē uzdevumu par saknēm un pakāpēm ar 4 apakšuzdevumiem.
+const PROMPT = `Tu esi matemātikas skolotājs Latvijā. Ģenerē VIEGLU uzdevumu par saknēm un pakāpēm ar 4 apakšuzdevumiem. Skaitļi ir mazi un veseli (piem. 4, 8, 9, 27). Izvairies no sarežģītiem izteiksmes.
 
 Katram apakšuzdevumam ir tips:
 - "choice" — izvēlies pareizo atbildi (4 varianti A,B,C,D)
@@ -356,12 +356,9 @@ function checkCorrect(userAns, t) {
 }
 
 async function getExplanation(t, userAns) {
-  const prompt = "Tu esi matemātikas skolotājs. Skolēns risināja uzdevumu par saknēm un pakāpēm.\n" +
-    "Uzdevums: " + t.expressionHtml.replace(/<[^>]+>/g,"") + (t.desc ? " (" + t.desc + ")" : "") + "\n" +
-    "Skolēna atbilde: " + userAns + "\n" +
-    "Pareizā atbilde: " + t.answerDisplay + "\n\n" +
-    "Uzraksti ĻOTI ĪSKU izskaidrojumu latviski (1-2 teikumi). Izmanto matemātiskos simbolus: ² ³ ⁴ √ ∛ ∜ · < > =\n" +
-    "Nekāds markdown, nekāds treknraksts. Tikai vienkāršs teksts. Beidz ar: Pareizā atbilde ir " + t.answerDisplay + ".";
+  const prompt = "Uzdevums: " + t.expressionHtml.replace(/<[^>]+>/g,"") + "\n" +
+    "Pareizā atbilde: " + t.answerDisplay + "\n" +
+    "Uzraksti 1 īsu teikumu latviski — kāpēc tieši šī atbilde. Bez uzrunām. Beidz ar: Pareizā atbilde: " + t.answerDisplay + ".";
   try {
     const text = await callGemini(prompt);
     return text.replace(/\*\*/g,"").replace(/\*/g,"").replace(/`/g,"").trim();
