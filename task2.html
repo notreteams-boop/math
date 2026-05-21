@@ -118,6 +118,14 @@
 </div>
 
 <script>
+window.onerror = function(msg, src, line, col, err) {
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("assignment").style.display = "block";
+  var e = document.getElementById("status");
+  e.textContent = "JS kļūda: " + msg + " (rindiņa " + line + ")";
+  e.style.display = "block";
+  return true;
+};
 const WORKER_URL = "https://floral-tree-d2cb.eusjs56999.workers.dev/";
 const GEMINI_MODEL = "gemini-2.5-flash";
 
@@ -221,7 +229,11 @@ async function fetchAssignment() {
     try { data = JSON.parse(clean); } catch(e) { throw new Error("JSON kļūda: " + clean.slice(0,100)); }
     if (!data.tasks || data.tasks.length < 4) throw new Error("Nepietiekami uzdevumi atbildē.");
     currentTasks = data.tasks;
-    renderAssignment();
+    try {
+      renderAssignment();
+    } catch(re) {
+      throw new Error("renderAssignment kļūda: " + re.message);
+    }
   } catch(e) {
     document.getElementById("loading").style.display = "none";
     document.getElementById("assignment").style.display = "block";
