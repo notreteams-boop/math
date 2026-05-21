@@ -88,7 +88,7 @@
 
 <script>
 const WORKER_URL = "https://floral-tree-d2cb.eusjs56999.workers.dev/";
-const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_MODEL = "gemini-2.0-flash";
 
 let currentTasks = [];
 
@@ -248,7 +248,15 @@ checkBtn.addEventListener("click", async function() {
 });
 
 function normalize(v) {
-  return v.replace(/\s/g, "").replace(",", ".").toLowerCase();
+  v = v.replace(/\s/g, "").replace(",", ".").toLowerCase();
+  // handle fractions like 1/2 -> 0.5
+  const fracMatch = v.match(/^(-?)(\d+)\/(\d+)$/);
+  if (fracMatch) {
+    const sign = fracMatch[1] === "-" ? -1 : 1;
+    const result = sign * parseInt(fracMatch[2]) / parseInt(fracMatch[3]);
+    return String(result);
+  }
+  return v;
 }
 
 async function fetchExplanation(task, userAns) {
