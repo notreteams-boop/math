@@ -228,25 +228,7 @@ async function fetchAssignment() {
     showStatus("Kļūda: " + e.message);
   }
 }
-function renderAssignment() {
-  const container = document.getElementById("tasks-container");
-  container.innerHTML = "";
 
-  currentTasks.forEach(function(t) {
-    const row = document.createElement("div");
-    row.className = "task-row";
-
-    const top = document.createElement("div");
-    top.className = "task-top";
-    top.textContent = t.id + " " + t.points;
-    row.appendChild(top);
-
-    if (t.desc) {
-      const desc = document.createElement("div");
-      desc.className = "task-desc";
-      desc.textContent = t.desc;
-      row.appendChild(desc);
-    }
 function renderAssignment() {
   const container = document.getElementById("tasks-container");
   container.innerHTML = "";
