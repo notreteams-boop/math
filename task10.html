@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10. uzdevums – Eksponentvienādojums</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #f4d5bb; color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 20px; min-height: 100vh; }
+  .page { max-width: 700px; margin: 0 auto; padding: 56px 40px 80px; }
+
+  #status { background: #fff3cd; border: 1px solid #ffc107; color: #7a5600; padding: 10px 14px; font-size: 0.85rem; margin-bottom: 20px; display: none; word-break: break-word; }
+
+  #loading { display: flex; flex-direction: column; gap: 16px; }
+  .sk { background: linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%); background-size: 200% 100%; animation: sh 1.4s infinite; border-radius: 2px; height: 22px; }
+  .sk1{width:55%} .sk2{width:30%} .sk3{width:80%;margin-top:10px} .sk4{width:65%}
+  @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  #assignment { display: none; }
+  .task-header { font-size: 1.1rem; margin-bottom: 8px; }
+  .task-header b { font-weight: 700; font-style: italic; }
+  .task-header i { font-style: italic; font-weight: 400; }
+  .task-text { font-size: 1rem; margin-bottom: 28px; }
+  .task-text sup { font-size: 0.65em; vertical-align: super; line-height: 0; }
+
+  .task-row { margin-bottom: 30px; }
+  .task-top { font-style: italic; font-size: 0.95rem; margin-bottom: 8px; }
+  .hint { font-size: 0.82rem; color: #666; font-style: italic; margin-bottom: 8px; }
+
+  .input-line { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .answer-input {
+    font-family: Arial, sans-serif; font-size: 1rem;
+    width: 180px; border: none; border-bottom: 1.5px solid #999;
+    outline: none; padding: 2px 4px; background: transparent;
+  }
+  .answer-input:focus { border-bottom-color: #000; }
+  .answer-input.ok { border-bottom-color: #1a7a3c; color: #1a7a3c; }
+  .answer-input.err { border-bottom-color: #b81c1c; color: #b81c1c; }
+  .answer-input-sm { width: 80px; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 4px; }
+  .toolbar-btn { font-family: Arial, sans-serif; font-size: 0.88rem; padding: 4px 9px; border: 1px solid #999; background: #f4d5bb; cursor: pointer; min-width: 32px; text-align: center; }
+  .toolbar-btn:hover { background: #e8c5a5; }
+
+  .btn-row { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { font-family: Arial, sans-serif; font-size: 0.92rem; padding: 8px 22px; border: 1.5px solid #000; background: #fff; color: #000; cursor: pointer; text-decoration: none; display: inline-block; }
+  .btn:hover { background: #000; color: #fff; }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-sec { border-color: #aaa; color: #555; }
+  .btn-sec:hover { background: #eee; color: #000; border-color: #aaa; }
+  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid #ddd; border-top-color: #666; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-left: 7px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #results { display: none; margin-top: 32px; }
+  .score-line { font-size: 1rem; font-weight: 600; margin-bottom: 16px; }
+  .res-item { border-left: 3px solid transparent; padding: 10px 14px; margin-bottom: 12px; font-size: 0.92rem; line-height: 1.6; }
+  .res-item.ok { border-color: #1a7a3c; background: #edf7f1; color: #1a7a3c; }
+  .res-item.err { border-color: #b81c1c; background: #fdf0f0; color: #b81c1c; }
+  .res-label { font-weight: 600; margin-bottom: 3px; }
+  .res-expl { font-size: 0.88rem; margin-top: 4px; color: #8a0000; }
+
+  @media (max-width: 500px) { .page { padding: 32px 20px 60px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div id="status"></div>
+  <div id="loading">
+    <div class="sk sk1"></div>
+    <div class="sk sk2"></div>
+    <div class="sk sk3"></div>
+    <div class="sk sk4"></div>
+  </div>
+
+  <div id="assignment">
+    <div class="task-header"><b>10. uzdevums</b> <i>(2 punkti)</i></div>
+    <div class="task-text" id="task-text"></div>
+
+    <!-- 10.1 -->
+    <div class="task-row">
+      <div class="task-top">10.1. <i>(1 punkts)</i> Pārveido vienādojuma labo pusi par skaitļa <span id="base-label"></span> pakāpi.</div>
+      <div class="hint">Pieraksti vienādojumu formā a<sup>f(x)</sup> = a<sup>n</sup></div>
+      <div class="input-line">
+        <input type="text" class="answer-input" id="input-step1" autocomplete="off" />
+      </div>
+      <div class="toolbar" id="toolbar-step1"></div>
+    </div>
+
+    <!-- 10.2 -->
+    <div class="task-row">
+      <div class="task-top">10.2. <i>(1 punkts)</i> Pāriet uz lineāru vienādojumu un atrisina to.</div>
+      <div class="hint">x = ?</div>
+      <div class="input-line">
+        <i>x</i> =
+        <input type="text" class="answer-input answer-input-sm" id="input-step2" autocomplete="off" inputmode="decimal" />
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="check-btn">Pārbaudīt</button>
+      <button class="btn btn-sec" id="new-btn">Jauns variants</button>
+    </div>
+    <div class="btn-row" style="margin-top:16px;">
+      <a href="index.html" class="btn btn-sec">Uz galveno izvēlni</a>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="task-header"><b>10. uzdevums</b> – <i>rezultāti</i></div>
+    <div class="score-line" id="score-line" style="margin-top:12px;"></div>
+    <div id="results-container"></div>
+    <div class="btn-row">
+      <button class="btn btn-sec" id="back-btn">Atpakaļ</button>
+      <button class="btn btn-sec" id="new-btn-2">Jauns variants</button>
+    </div>
+    <div class="btn-row" style="margin-top:16px;">
+      <a href="index.html" class="btn btn-sec">Uz galveno izvēlni</a>
+    </div>
+  </div>
+</div>
+
+<script>
+window.onerror = function(msg, src, line) {
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("assignment").style.display = "block";
+  var s = document.getElementById("status");
+  s.textContent = "JS kļūda: " + msg + " (rindiņa " + line + ")";
+  s.style.display = "block";
+  return true;
+};
+
+const WORKER_URL = "https://floral-tree-d2cb.eusjs56999.workers.dev/";
+const GEMINI_MODEL = "gemini-2.5-flash";
+let currentTask = null;
+
+function showStatus(msg) { var e = document.getElementById("status"); e.textContent = msg; e.style.display = "block"; }
+function hideStatus() { document.getElementById("status").style.display = "none"; }
+
+async function callGemini(prompt) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25000);
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST", signal: controller.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: GEMINI_MODEL, contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.8 } })
+    });
+    clearTimeout(timer);
+    const text = await res.text();
+    if (!res.ok) { let m = "HTTP " + res.status; try { m = JSON.parse(text).error.message; } catch(e){} throw new Error(m); }
+    const data = JSON.parse(text);
+    const r = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!r) throw new Error("Tukša atbilde.");
+    return r;
+  } catch(e) { clearTimeout(timer); if (e.name === "AbortError") throw new Error("Timeout."); throw e; }
+}
+
+// a^(x+p) = a^n, answer x = n - p
+const PROMPT = `Tu esi matemātikas skolotājs Latvijā. Ģenerē eksponentvienādojumu uzdevumu.
+
+Forma: base^(x + p) = rhs
+kur:
+- base ∈ {2, 3, 5} — bāze
+- p ∈ {-3,-2,-1,0,1,2,3} — konstante pie x pakāpē (ne 0)
+- rhs = base^n, n ∈ {1,2,3,4,5} — labā puse kā bāzes pakāpe
+- atbilde x = n - p (vesels skaitlis)
+
+Piemērs: 2^(x-1) = 32 → 2^(x-1) = 2^5 → x-1 = 5 → x = 6
+
+Atbildi TIKAI ar derīgu JSON bez markdown:
+{
+  "base": 2,
+  "p": -1,
+  "pDisplay": "–1",
+  "n": 5,
+  "rhs": 32,
+  "equationHtml": "2<sup><i>x</i>–1</sup> = 32",
+  "step1answer": "2^(x-1)=2^5",
+  "step1alt": ["2^(x–1)=2^5", "2^(x-1)=2⁵"],
+  "step1display": "2^(x–1) = 2^5",
+  "linearEq": "x–1=5",
+  "answer": "6",
+  "answerAlt": []
+}
+
+Izmanto JAUNAS vērtības. Pārbaudi: base^n = rhs. answer = n - p.`;
+
+function buildToolbar(stepId) {
+  const tb = document.getElementById("toolbar-" + stepId);
+  const inp = document.getElementById("input-" + stepId);
+  if (!tb) return;
+  tb.innerHTML = "";
+  const base = currentTask ? String(currentTask.base) : "2";
+  ["^","(","x","+","–",base,"0","1","2","3","4","5","6","7","8","9","="].forEach(function(s) {
+    const b = document.createElement("button");
+    b.className = "toolbar-btn"; b.type = "button"; b.textContent = s;
+    b.onclick = function() {
+      const ins = s === "–" ? "-" : s;
+      const st = inp.selectionStart, en = inp.selectionEnd;
+      inp.value = inp.value.slice(0, st) + ins + inp.value.slice(en);
+      inp.focus(); inp.setSelectionRange(st + ins.length, st + ins.length);
+    };
+    tb.appendChild(b);
+  });
+}
+
+async function fetchNewAssignment() {
+  document.getElementById("loading").style.display = "flex";
+  document.getElementById("assignment").style.display = "none";
+  document.getElementById("results").style.display = "none";
+  document.getElementById("input-step1").value = "";
+  document.getElementById("input-step2").value = "";
+  ["input-step1","input-step2"].forEach(function(id){ document.getElementById(id).classList.remove("ok","err"); });
+  hideStatus();
+
+  try {
+    const raw = await callGemini(PROMPT);
+    const clean = raw.replace(/```json/gi,"").replace(/```/gi,"").trim();
+    let data;
+    try { data = JSON.parse(clean); } catch(e) { throw new Error("JSON kļūda: " + clean.slice(0,100)); }
+    if (!data.answer || !data.equationHtml) throw new Error("Nepilnīga atbilde.");
+    currentTask = data;
+
+    document.getElementById("task-text").innerHTML = "Atrisini vienādojumu " + data.equationHtml + ".";
+    document.getElementById("base-label").textContent = data.base;
+
+    buildToolbar("step1");
+
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("assignment").style.display = "block";
+  } catch(e) {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("assignment").style.display = "block";
+    showStatus("Kļūda: " + e.message);
+  }
+}
+
+function norm(v) {
+  return v.trim().replace(/\s+/g,"").replace(/–/g,"-").replace(/,/g,".").toLowerCase();
+}
+
+function checkStep1(user) {
+  const u = norm(user);
+  const correct = [currentTask.step1answer].concat(currentTask.step1alt||[]);
+  return correct.some(function(a){ return norm(a) === u; });
+}
+
+document.getElementById("check-btn").addEventListener("click", async function() {
+  const v1 = document.getElementById("input-step1").value.trim();
+  const v2 = document.getElementById("input-step2").value.trim();
+  if (!v1 || !v2) { showStatus("Lūdzu, aizpildi abus soļus!"); return; }
+  hideStatus();
+
+  const checkBtn = document.getElementById("check-btn");
+  checkBtn.disabled = true;
+  checkBtn.innerHTML = "Pārbauda<span class='spinner'></span>";
+  document.getElementById("new-btn").disabled = true;
+
+  const ok1 = checkStep1(v1);
+  const ok2 = norm(v2) === norm(currentTask.answer) ||
+    (currentTask.answerAlt||[]).some(function(a){ return norm(a) === norm(v2); });
+
+  document.getElementById("input-step1").classList.remove("ok","err");
+  document.getElementById("input-step2").classList.remove("ok","err");
+  document.getElementById("input-step1").classList.add(ok1 ? "ok" : "err");
+  document.getElementById("input-step2").classList.add(ok2 ? "ok" : "err");
+
+  const score = (ok1?1:0) + (ok2?1:0);
+  document.getElementById("score-line").textContent = "Rezultāts: " + score + " / 2";
+
+  const rc = document.getElementById("results-container");
+  rc.innerHTML = "";
+
+  [
+    { id:"10.1.", ok: ok1, user: v1,
+      expl: ok1 ? "" : "Labā puse " + currentTask.rhs + " = " + currentTask.base + "^" + currentTask.n + ". Pareizā atbilde: " + currentTask.step1display + "." },
+    { id:"10.2.", ok: ok2, user: "x = " + v2,
+      expl: ok2 ? "" : "No " + currentTask.linearEq + " iegūst x = " + currentTask.answer + "." }
+  ].forEach(function(r) {
+    const div = document.createElement("div");
+    div.className = "res-item " + (r.ok ? "ok" : "err");
+    const label = document.createElement("div"); label.className = "res-label";
+    label.textContent = r.id + " " + r.user;
+    div.appendChild(label);
+    if (r.ok) {
+      const ok = document.createElement("div"); ok.textContent = "Pareizi!"; div.appendChild(ok);
+    } else {
+      const expl = document.createElement("div"); expl.className = "res-expl";
+      expl.textContent = r.expl; div.appendChild(expl);
+    }
+    rc.appendChild(div);
+  });
+
+  document.getElementById("assignment").style.display = "none";
+  document.getElementById("results").style.display = "block";
+  checkBtn.disabled = false; checkBtn.innerHTML = "Pārbaudīt";
+  document.getElementById("new-btn").disabled = false;
+});
+
+document.getElementById("back-btn").addEventListener("click", function() {
+  document.getElementById("results").style.display = "none";
+  document.getElementById("assignment").style.display = "block";
+  ["input-step1","input-step2"].forEach(function(id){ document.getElementById(id).classList.remove("ok","err"); });
+});
+
+["input-step1","input-step2"].forEach(function(id){
+  document.getElementById(id).addEventListener("keydown", function(e){
+    if (e.key === "Enter") document.getElementById("check-btn").click();
+  });
+});
+
+[document.getElementById("new-btn"), document.getElementById("new-btn-2")].forEach(function(btn) {
+  btn.addEventListener("click", fetchNewAssignment);
+});
+
+fetchNewAssignment();
+</script>
+</body>
+</html>
