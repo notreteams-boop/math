@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Matemātika – Uzdevums</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #f4d5bb; color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 20px; min-height: 100vh; }
+  .page { max-width: 700px; margin: 0 auto; padding: 56px 40px 80px; }
+
+  #status { background: #fff3cd; border: 1px solid #ffc107; color: #7a5600; padding: 10px 14px; font-size: 0.85rem; margin-bottom: 20px; display: none; word-break: break-word; }
+
+  #loading { display: flex; flex-direction: column; gap: 16px; }
+  .sk { background: linear-gradient(90deg,#ebebeb 25%,#f5f5f5 50%,#ebebeb 75%); background-size: 200% 100%; animation: sh 1.4s infinite; border-radius: 2px; height: 22px; }
+  .sk1 { width: 55%; } .sk2 { width: 30%; } .sk3 { width: 75%; margin-top:10px; } .sk4 { width: 65%; }
+  @keyframes sh { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+  #assignment { display: none; }
+  .task-header { font-size: 1.1rem; margin-bottom: 4px; }
+  .task-header b { font-weight: 700; font-style: italic; }
+  .task-header i { font-style: italic; font-weight: 400; }
+  .task-intro { font-size: 1rem; margin-bottom: 36px; }
+  .task-row { margin-bottom: 40px; }
+  .task-top { font-style: italic; font-size: 1rem; margin-bottom: 4px; }
+  .task-line { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  .task-expr { font-size: 1.15rem; }
+  .task-expr sup { font-size: 0.65em; vertical-align: super; line-height: 0; }
+  .task-expr sub { font-size: 0.65em; vertical-align: sub; line-height: 0; }
+  .answer-input { font-family: Arial, sans-serif; font-size: 1rem; width: 80px; border: none; border-bottom: 1.5px solid #999; outline: none; padding: 2px 4px; background: transparent; }
+  .answer-input:focus { border-bottom-color: #000; }
+  .answer-input.ok { border-bottom-color: #1a7a3c; color: #1a7a3c; }
+  .answer-input.err { border-bottom-color: #b81c1c; color: #b81c1c; }
+
+  .btn-row { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { font-family: Arial, sans-serif; font-size: 0.92rem; padding: 8px 22px; border: 1.5px solid #000; background: #fff; color: #000; cursor: pointer; text-decoration: none; display: inline-block; }
+  .btn:hover { background: #000; color: #fff; }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-sec { border-color: #aaa; color: #555; }
+  .btn-sec:hover { background: #eee; color: #000; border-color: #aaa; }
+  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid #ddd; border-top-color: #666; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-left: 7px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #results { display: none; margin-top: 32px; }
+  .res-item { border-left: 3px solid transparent; padding: 10px 14px; margin-bottom: 14px; font-size: 0.92rem; line-height: 1.6; }
+  .res-item.ok { border-color: #1a7a3c; background: #edf7f1; color: #1a7a3c; }
+  .res-item.err { border-color: #b81c1c; background: #fdf0f0; color: #b81c1c; }
+  .res-label { font-weight: 600; margin-bottom: 3px; }
+  .res-expl { font-size: 0.88rem; margin-top: 5px; color: #8a0000; }
+
+  @media (max-width: 500px) { .page { padding: 32px 20px 60px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div id="status"></div>
+  <div id="loading">
+    <div class="sk sk1"></div>
+    <div class="sk sk2"></div>
+    <div class="sk sk3"></div>
+    <div class="sk sk4"></div>
+  </div>
+
+  <div id="assignment">
+    <div class="task-header" id="task-title"></div>
+    <div class="task-intro" id="task-intro"></div>
+    <div id="tasks-container"></div>
+    <div class="btn-row">
+      <button class="btn" id="check-btn">Pārbaudīt</button>
+      <button class="btn btn-sec" id="new-btn">Jauns variants</button>
+    </div>
+    <div class="btn-row" style="margin-top:16px;">
+      <a href="index.html" class="btn btn-sec">Uz galveno izvēlni</a>
+    </div>
+  </div>
+
+  <div id="results">
+    <div id="results-container"></div>
+    <div class="btn-row">
+      <button class="btn btn-sec" id="back-btn">Atpakaļ</button>
+      <button class="btn btn-sec" id="new-btn-2">Jauns variants</button>
+    </div>
+    <div class="btn-row" style="margin-top:16px;">
+      <a href="index.html" class="btn btn-sec">Uz galveno izvēlni</a>
+    </div>
+  </div>
+</div>
+
+<script>
+const WORKER_URL = "https://floral-tree-d2cb.eusjs56999.workers.dev/";
+const GEMINI_MODEL = "gemini-2.0-flash";
+
+let currentTasks = [];
+
+const statusEl = document.getElementById("status");
+const loadingEl = document.getElementById("loading");
+const assignmentEl = document.getElementById("assignment");
+const taskTitle = document.getElementById("task-title");
+const taskIntro = document.getElementById("task-intro");
+const tasksContainer = document.getElementById("tasks-container");
+const checkBtn = document.getElementById("check-btn");
+const newBtn = document.getElementById("new-btn");
+const resultsEl = document.getElementById("results");
+const resultsContainer = document.getElementById("results-container");
+const backBtn = document.getElementById("back-btn");
+const newBtn2 = document.getElementById("new-btn-2");
+
+function showStatus(msg) {
+  statusEl.textContent = msg;
+  statusEl.style.display = "block";
+}
+function hideStatus() {
+  statusEl.style.display = "none";
+}
+
+async function callGemini(prompt) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST",
+      signal: controller.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: GEMINI_MODEL,
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.9 }
+      })
+    });
+    clearTimeout(timer);
+    const text = await res.text();
+    if (!res.ok) {
+      let msg = "HTTP " + res.status + ": " + text.slice(0, 150);
+      try { const j = JSON.parse(text); if (j.error) msg = j.error.message; } catch(e) {}
+      throw new Error(msg);
+    }
+    const data = JSON.parse(text);
+    const result = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
+    if (!result) throw new Error("Tukša atbilde. Atbilde: " + text.slice(0, 200));
+    return result;
+  } catch(e) {
+    clearTimeout(timer);
+    if (e.name === "AbortError") throw new Error("Savienojuma timeout (20s). Pārbaudi internetu.");
+    throw e;
+  }
+}
+
+const PROMPT = `Tu esi matemātikas skolotājs Latvijā.
+Ģenerē vienu skolas uzdevumu ar diviem apakšuzdevumiem:
+1.1. Aprēķina pakāpes vērtību (piem. 4^(1/2), 27^(1/3), 8², 5⁰, 2⁻¹)
+1.2. Aprēķina logaritma vērtību (piem. log₂8, log₅25, log₃27)
+
+Atbildi TIKAI ar derīgu JSON. Nekāds markdown, nekāds teksts pirms vai pēc JSON. Tikai JSON:
+{
+  "title": "1. uzdevums (2 punkti)",
+  "intro": "Aprēķini.",
+  "tasks": [
+    { "id": "1.1.", "points": "(1 punkts)", "type": "power", "expressionHtml": "16<sup>1/2</sup>", "answer": "4" },
+    { "id": "1.2.", "points": "(1 punkts)", "type": "log", "expressionHtml": "log<sub>3</sub>81", "answer": "4" }
+  ]
+}
+Izmanto jaunas vērtības. answer ir tikai skaitlis.`;
+
+async function fetchNewAssignment() {
+  loadingEl.style.display = "flex";
+  assignmentEl.style.display = "none";
+  resultsEl.style.display = "none";
+  hideStatus();
+  try {
+    const raw = await callGemini(PROMPT);
+    const clean = raw.replace(/```json/gi, "").replace(/```/gi, "").trim();
+    let data;
+    try { data = JSON.parse(clean); }
+    catch(e) { throw new Error("JSON kļūda: " + clean.slice(0, 100)); }
+    if (!data.tasks || !data.tasks.length) throw new Error("Nav uzdevumu atbildē.");
+    renderAssignment(data);
+  } catch(e) {
+    loadingEl.style.display = "none";
+    assignmentEl.style.display = "block";
+    showStatus("Kļūda: " + e.message);
+  }
+}
+
+function renderAssignment(data) {
+  currentTasks = data.tasks;
+  const titleText = data.title;
+  const pIdx = titleText.indexOf("(");
+  if (pIdx !== -1) {
+    taskTitle.innerHTML = "<b>" + titleText.slice(0, pIdx).trim() + "</b> <i>" + titleText.slice(pIdx) + "</i>";
+  } else {
+    taskTitle.innerHTML = "<b>" + titleText + "</b>";
+  }
+  taskIntro.textContent = data.intro;
+  tasksContainer.innerHTML = "";
+  data.tasks.forEach(function(t) {
+    const row = document.createElement("div");
+    row.className = "task-row";
+    const top = document.createElement("div");
+    top.className = "task-top";
+    top.textContent = t.id + " " + t.points;
+    const line = document.createElement("div");
+    line.className = "task-line";
+    const expr = document.createElement("span");
+    expr.className = "task-expr";
+    expr.innerHTML = t.expressionHtml;
+    const eq = document.createElement("span");
+    eq.textContent = " =";
+    const inp = document.createElement("input");
+    inp.type = "text";
+    inp.className = "answer-input";
+    inp.dataset.taskId = t.id;
+    inp.setAttribute("inputmode", "text");
+    inp.setAttribute("autocomplete", "off");
+    inp.addEventListener("keydown", function(e) { if (e.key === "Enter") checkBtn.click(); });
+    line.append(expr, eq, inp);
+    row.append(top, line);
+    tasksContainer.appendChild(row);
+  });
+  loadingEl.style.display = "none";
+  assignmentEl.style.display = "block";
+}
+
+checkBtn.addEventListener("click", async function() {
+  const inputs = tasksContainer.querySelectorAll(".answer-input");
+  let allOk = true;
+  inputs.forEach(function(inp) { if (!inp.value.trim()) allOk = false; });
+  if (!allOk) { showStatus("Lūdzu, atbildi uz visiem uzdevumiem!"); return; }
+  hideStatus();
+  checkBtn.disabled = true;
+  checkBtn.innerHTML = "Pārbauda<span class='spinner'></span>";
+  newBtn.disabled = true;
+  const results = [];
+  for (let i = 0; i < currentTasks.length; i++) {
+    const t = currentTasks[i];
+    const inp = tasksContainer.querySelector("[data-task-id='" + t.id + "']");
+    const userAns = inp.value.trim();
+    const correct = normalize(userAns) === normalize(t.answer);
+    inp.classList.remove("ok", "err");
+    inp.classList.add(correct ? "ok" : "err");
+    let expl = "";
+    if (!correct) expl = await fetchExplanation(t, userAns);
+    results.push({ t, userAns, correct, expl });
+  }
+  renderResults(results);
+  checkBtn.disabled = false;
+  checkBtn.innerHTML = "Pārbaudīt";
+  newBtn.disabled = false;
+});
+
+function normalize(v) {
+  v = v.replace(/\s/g, "").replace(",", ".").toLowerCase();
+  // handle fractions like 1/2 -> 0.5
+  const fracMatch = v.match(/^(-?)(\d+)\/(\d+)$/);
+  if (fracMatch) {
+    const sign = fracMatch[1] === "-" ? -1 : 1;
+    const result = sign * parseInt(fracMatch[2]) / parseInt(fracMatch[3]);
+    return String(result);
+  }
+  return v;
+}
+
+async function fetchExplanation(task, userAns) {
+  const typeLabel = task.type === "power" ? "pakāpe" : "logaritms";
+  const exprClean = task.expressionHtml.replace(/<[^>]+>/g, "");
+  const prompt = "Tu esi matemātikas skolotājs. Skolēns risināja uzdevumu: " + typeLabel + ".\nIzteiksme: " + exprClean + "\nSkolēna atbilde: " + userAns + "\nPareizā atbilde: " + task.answer + "\nUzraksti ĻOTI ĪSKU izskaidrojumu latviski (1-2 teikumi). Izmanto matemātiskos simbolus: ² ³ √ · ÷ ½ ⅓. Nekāds markdown. Tikai vienkāršs teksts. Beidz ar: Pareizā atbilde ir " + task.answer + ".";
+  try {
+    const text = await callGemini(prompt);
+    return text.replace(/\*\*/g, "").replace(/\*/g, "").replace(/#{1,6}\s/g, "").replace(/`/g, "").trim();
+  } catch(e) {
+    return "Pareizā atbilde ir " + task.answer + ".";
+  }
+}
+
+function renderResults(results) {
+  resultsContainer.innerHTML = "";
+  results.forEach(function(r) {
+    const div = document.createElement("div");
+    div.className = "res-item " + (r.correct ? "ok" : "err");
+    const label = document.createElement("div");
+    label.className = "res-label";
+    label.textContent = r.t.id + " = " + r.userAns;
+    div.appendChild(label);
+    if (r.correct) {
+      const ok = document.createElement("div");
+      ok.textContent = "Pareizi!";
+      div.appendChild(ok);
+    } else {
+      const expl = document.createElement("div");
+      expl.className = "res-expl";
+      expl.textContent = r.expl || "Pareizā atbilde ir " + r.t.answer + ".";
+      div.appendChild(expl);
+    }
+    resultsContainer.appendChild(div);
+  });
+  assignmentEl.style.display = "none";
+  resultsEl.style.display = "block";
+}
+
+backBtn.addEventListener("click", function() {
+  resultsEl.style.display = "none";
+  assignmentEl.style.display = "block";
+  tasksContainer.querySelectorAll(".answer-input").forEach(function(inp) {
+    inp.classList.remove("ok", "err");
+  });
+});
+
+[newBtn, newBtn2].forEach(function(btn) {
+  btn.addEventListener("click", fetchNewAssignment);
+});
+
+fetchNewAssignment();
+</script>
+</body>
+</html>
