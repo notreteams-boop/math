@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>29. uzdevums – Kombinatorika</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #f4d5bb; color: #000; font-family: Arial, Helvetica, sans-serif; font-size: 19px; min-height: 100vh; }
+  .page { max-width: 700px; margin: 0 auto; padding: 52px 40px 80px; }
+
+  #status { background: #fff3cd; border: 1px solid #ffc107; color: #7a5600; padding: 10px 14px; font-size: 0.85rem; margin-bottom: 20px; display: none; word-break: break-word; }
+
+  #loading { display: flex; flex-direction: column; gap: 16px; }
+  .sk { background: linear-gradient(90deg,#e8c5a5 25%,#f4d5bb 50%,#e8c5a5 75%); background-size: 200% 100%; animation: sh 1.4s infinite; border-radius: 2px; height: 22px; }
+  .sk1{width:50%}.sk2{width:75%}.sk3{width:60%}
+  @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  #assignment { display: none; }
+
+  .task-header { font-size: 1.1rem; margin-bottom: 2px; }
+  .task-header b { font-weight: 700; font-style: italic; }
+  .task-header i { font-style: italic; font-weight: 400; }
+  .task-intro { font-size: 1rem; margin-bottom: 28px; color: #000; }
+
+  /* Big formula display */
+  .formula-display {
+    font-size: 1.3rem;
+    margin: 18px 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .formula-display .sym {
+    font-size: 1.3rem;
+    font-style: italic;
+    font-weight: 700;
+    position: relative;
+    display: inline-block;
+  }
+  .formula-display .sym sup {
+    font-size: 0.6em;
+    vertical-align: super;
+    line-height: 0;
+    font-weight: 700;
+  }
+  .formula-display .sym sub {
+    font-size: 0.6em;
+    vertical-align: sub;
+    line-height: 0;
+    font-weight: 700;
+  }
+
+  /* Steps input area */
+  .steps-label { font-size: 0.92rem; color: #555; margin-bottom: 8px; margin-top: 20px; }
+
+  .step-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .step-label { font-size: 0.9rem; color: #777; min-width: 80px; font-style: italic; }
+
+  .answer-input {
+    font-family: Arial, sans-serif; font-size: 1rem;
+    border: none; border-bottom: 1.5px solid #999;
+    outline: none; padding: 2px 6px; background: transparent;
+    width: 220px;
+  }
+  .answer-input:focus { border-bottom-color: #000; }
+  .answer-input.ok { border-bottom-color: #1a7a3c; color: #1a7a3c; }
+  .answer-input.err { border-bottom-color: #b81c1c; color: #b81c1c; }
+
+  .final-input {
+    font-family: Arial, sans-serif; font-size: 1.1rem; font-weight: 700;
+    border: none; border-bottom: 2px solid #000;
+    outline: none; padding: 3px 6px; background: transparent;
+    width: 120px;
+  }
+  .final-input:focus { border-bottom-color: #000; }
+  .final-input.ok { border-bottom-color: #1a7a3c; color: #1a7a3c; }
+  .final-input.err { border-bottom-color: #b81c1c; color: #b81c1c; }
+
+  /* Floating toolbar */
+  .float-toolbar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff8f0;
+    border: 1.5px solid #999;
+    padding: 8px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    max-width: 90vw;
+    justify-content: center;
+  }
+  .tb-btn {
+    font-family: Arial, sans-serif; font-size: 0.9rem;
+    padding: 5px 10px; border: 1px solid #aaa;
+    background: #f4d5bb; cursor: pointer;
+    min-width: 36px; text-align: center;
+  }
+  .tb-btn:hover { background: #e8c5a5; }
+  .tb-toggle {
+    font-family: Arial, sans-serif; font-size: 0.8rem;
+    padding: 4px 8px; border: 1px solid #aaa;
+    background: #f4d5bb; cursor: pointer; color: #555;
+  }
+  .tb-toggle:hover { background: #e8c5a5; }
+
+  /* Buttons */
+  .btn-row { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn { font-family: Arial, sans-serif; font-size: 0.92rem; padding: 8px 22px; border: 1.5px solid #000; background: #f4d5bb; color: #000; cursor: pointer; text-decoration: none; display: inline-block; transition: background 0.12s, color 0.12s; }
+  .btn:hover { background: #000; color: #f4d5bb; }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn-sec { border-color: #aaa; color: #555; }
+  .btn-sec:hover { background: #e8c5a5; color: #000; border-color: #aaa; }
+  .spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid #ddd; border-top-color: #666; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-left: 7px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Results */
+  #results { display: none; margin-top: 8px; }
+  .res-item { border-left: 3px solid transparent; padding: 10px 14px; margin-bottom: 14px; font-size: 0.92rem; line-height: 1.6; }
+  .res-item.ok { border-color: #1a7a3c; background: #edf7f1; color: #1a7a3c; }
+  .res-item.err { border-color: #b81c1c; background: #fdf0f0; color: #b81c1c; }
+  .res-label { font-weight: 600; margin-bottom: 3px; }
+  .res-expl { font-size: 0.88rem; margin-top: 5px; color: #555; }
+  .res-expl.wrong { color: #8a0000; }
+
+  @media (max-width: 500px) {
+    .page { padding: 32px 20px 120px; }
+    .answer-input { width: 180px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div id="status"></div>
+
+  <div id="loading">
+    <div class="sk sk1"></div>
+    <div class="sk sk2"></div>
+    <div class="sk sk3"></div>
+  </div>
+
+  <div id="assignment">
+    <div class="task-header"><b id="task-num">29. uzdevums</b> <i id="task-pts">(1 punkts)</i></div>
+    <div class="task-intro" id="task-intro"></div>
+
+    <div class="formula-display">
+      <span class="sym" id="formula-sym"></span>
+      <span id="formula-eq"> = </span>
+    </div>
+
+    <div class="steps-label">Atrisini pa soļiem:</div>
+
+    <div class="step-row">
+      <span class="step-label" id="step1-label">Formula:</span>
+      <input type="text" class="answer-input" id="ans-formula" placeholder="piem. n!/(n-k)!" autocomplete="off" />
+    </div>
+
+    <div class="step-row">
+      <span class="step-label" id="step2-label">Aizvieto:</span>
+      <input type="text" class="answer-input" id="ans-substitute" placeholder="" autocomplete="off" />
+    </div>
+
+    <div class="step-row">
+      <span class="step-label">Atbilde:</span>
+      <input type="text" class="final-input" id="ans-final" placeholder="" autocomplete="off" />
+    </div>
+
+    <div class="btn-row">
+      <button class="btn" id="check-btn" onclick="checkAnswers()">Pārbaudīt</button>
+      <button class="btn btn-sec" id="new-btn" onclick="fetchAssignment()">Jauns variants</button>
+    </div>
+    <div class="btn-row" style="margin-top:14px; margin-bottom: 80px;">
+      <a href="index.html" class="btn btn-sec">Uz galveno izvēlni</a>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="task-header" style="margin-bottom:20px;"><b>29. uzdevums</b> – <i>rezultāti</i></div>
+    <div id="results-container"></div>
+    <div class="btn-row">
+      <button class="btn btn-sec" onclick="goBack()">Atpakaļ</button>
+      <button class="btn btn-sec" onclick="fetchAssignment()">Jauns variants</button>
+    </div>
+    <div class="btn-row" style="margin-top:14px; margin-bottom: 80px;">
+      <a href="index.html" class="btn btn-sec">Uz galveno izvēlni</a>
+    </div>
+  </div>
+</div>
+
+<!-- Floating toolbar -->
+<div class="float-toolbar" id="toolbar">
+  <button class="tb-btn" onclick="ins('!')">!</button>
+  <button class="tb-btn" onclick="ins('·')">·</button>
+  <button class="tb-btn" onclick="ins('²')">x²</button>
+  <button class="tb-btn" onclick="ins('³')">x³</button>
+  <button class="tb-btn" onclick="ins('^')">xⁿ</button>
+  <button class="tb-btn" onclick="ins('√')">√</button>
+  <button class="tb-btn" onclick="ins('∛')">∛</button>
+  <button class="tb-btn" onclick="ins('/')">a/b</button>
+  <button class="tb-btn" onclick="ins('(')"> ( </button>
+  <button class="tb-btn" onclick="ins(')')"> ) </button>
+  <button class="tb-btn" onclick="ins('∞')">∞</button>
+  <button class="tb-btn" onclick="ins('≤')">≤</button>
+  <button class="tb-btn" onclick="ins('≥')">≥</button>
+  <button class="tb-btn" onclick="ins('≠')">≠</button>
+  <button class="tb-toggle" onclick="toggleToolbar()">✕</button>
+</div>
+
+<script>
+const WORKER_URL = "https://floral-tree-d2cb.eusjs56999.workers.dev/";
+const GEMINI_MODEL = "gemini-2.5-flash";
+
+var currentTask = null;
+var activeInput = null;
+var toolbarVisible = true;
+
+// Track which input is focused
+document.addEventListener("focusin", function(e) {
+  if (e.target.tagName === "INPUT") activeInput = e.target;
+});
+
+function ins(char) {
+  if (!activeInput) {
+    // insert into last focused or final answer
+    activeInput = document.getElementById("ans-final");
+  }
+  var inp = activeInput;
+  var s = inp.selectionStart, e2 = inp.selectionEnd;
+  inp.value = inp.value.slice(0, s) + char + inp.value.slice(e2);
+  inp.focus();
+  inp.setSelectionRange(s + char.length, s + char.length);
+}
+
+function toggleToolbar() {
+  var tb = document.getElementById("toolbar");
+  toolbarVisible = !toolbarVisible;
+  tb.style.display = toolbarVisible ? "flex" : "none";
+}
+
+function showStatus(msg) { var e = document.getElementById("status"); e.textContent = msg; e.style.display = "block"; }
+function hideStatus() { document.getElementById("status").style.display = "none"; }
+
+async function callGemini(prompt) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 25000);
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: "POST", signal: controller.signal,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model: GEMINI_MODEL, contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.9 } })
+    });
+    clearTimeout(timer);
+    const text = await res.text();
+    if (!res.ok) { let m = "HTTP " + res.status; try { m = JSON.parse(text).error.message; } catch(e){} throw new Error(m); }
+    const data = JSON.parse(text);
+    const r = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text;
+    if (!r) throw new Error("Tukša atbilde.");
+    return r;
+  } catch(e) { clearTimeout(timer); if (e.name === "AbortError") throw new Error("Timeout."); throw e; }
+}
+
+const PROMPT = `Tu esi matemātikas skolotājs Latvijā.
+Ģenerē vienu kombinatorikas uzdevumu. Izvēlies NEJAUŠU tipu no šiem trim:
+- A (izvietojumi): A^k_n = n!/(n-k)!  piem. A²₅ = 5·4 = 20
+- C (kombinācijas): C^k_n = n!/(k!(n-k)!)  piem. C²₅ = 10
+- P (permutācijas): P_n = n!  piem. P₄ = 24
+
+Izmanto vienkāršus skaitļus (n no 3 līdz 8, k no 1 līdz 4).
+
+Atbildi TIKAI ar derīgu JSON bez markdown:
+{
+  "type": "A",
+  "symbolHtml": "A<sup>2</sup><sub>5</sub>",
+  "symbolText": "A²₅",
+  "n": 5,
+  "k": 2,
+  "intro": "Aprēķini A²₅ skaitlisko vērtību.",
+  "formulaCorrect": "n!/(n-k)!",
+  "formulaDisplay": "A^k_n = n!/(n-k)!",
+  "substituteCorrect": "5!/(5-2)!",
+  "substituteAlt": ["5!/3!", "5·4", "20"],
+  "answer": "20",
+  "explanation": "A²₅ = 5!/(5-2)! = 5!/3! = 5·4 = 20. Izmantojam izvietojumu formulu."
+}
+
+Svarīgi: explanation raksti latviski, bez markdown, ar matemātiskajiem simboliem ² ³ · ! Beidz ar: Atbilde ir [skaitlis].`;
+
+async function fetchAssignment() {
+  document.getElementById("loading").style.display = "flex";
+  document.getElementById("assignment").style.display = "none";
+  document.getElementById("results").style.display = "none";
+  hideStatus();
+  ["ans-formula","ans-substitute","ans-final"].forEach(function(id) {
+    var el = document.getElementById(id);
+    el.value = "";
+    el.classList.remove("ok","err");
+  });
+
+  try {
+    const raw = await callGemini(PROMPT);
+    const clean = raw.replace(/```json/gi,"").replace(/```/gi,"").trim();
+    let data;
+    try { data = JSON.parse(clean); } catch(e) { throw new Error("JSON kļūda: " + clean.slice(0,100)); }
+    currentTask = data;
+    renderAssignment();
+  } catch(e) {
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("assignment").style.display = "block";
+    showStatus("Kļūda: " + e.message);
+  }
+}
+
+function renderAssignment() {
+  var t = currentTask;
+
+  // Update step labels based on type
+  var formulaLabels = { "A": "A^k_n =", "C": "C^k_n =", "P": "P_n =" };
+  document.getElementById("step1-label").textContent = formulaLabels[t.type] || "Formula:";
+  document.getElementById("step2-label").textContent = "Aizvieto:";
+
+  document.getElementById("task-intro").textContent = t.intro;
+  document.getElementById("formula-sym").innerHTML = t.symbolHtml + " =";
+
+  document.getElementById("loading").style.display = "none";
+  document.getElementById("assignment").style.display = "block";
+}
+
+function normalize(v) {
+  return v.trim().replace(/\s+/g,"").toLowerCase()
+    .replace(/×/g,"·").replace(/\*/g,"·");
+}
+
+function checkStep(userVal, correct, alts) {
+  const u = normalize(userVal);
+  const all = [correct].concat(alts || []).map(normalize);
+  return all.indexOf(u) !== -1;
+}
+
+async function checkAnswers() {
+  hideStatus();
+  var t = currentTask;
+  if (!t) return;
+
+  var vFormula = document.getElementById("ans-formula").value;
+  var vSubst   = document.getElementById("ans-substitute").value;
+  var vFinal   = document.getElementById("ans-final").value;
+
+  if (!vFormula.trim() || !vSubst.trim() || !vFinal.trim()) {
+    showStatus("Lūdzu, aizpildi visus soļus!"); return;
+  }
+
+  var checkBtn = document.getElementById("check-btn");
+  checkBtn.disabled = true;
+  checkBtn.innerHTML = "Pārbauda<span class='spinner'></span>";
+  document.getElementById("new-btn").disabled = true;
+
+  var okFormula  = checkStep(vFormula, t.formulaCorrect, [t.formulaDisplay]);
+  var okSubst    = checkStep(vSubst, t.substituteCorrect, t.substituteAlt || []);
+  var okFinal    = normalize(vFinal) === normalize(t.answer);
+
+  // Color inputs
+  document.getElementById("ans-formula").classList.toggle("ok", okFormula);
+  document.getElementById("ans-formula").classList.toggle("err", !okFormula);
+  document.getElementById("ans-substitute").classList.toggle("ok", okSubst);
+  document.getElementById("ans-substitute").classList.toggle("err", !okSubst);
+  document.getElementById("ans-final").classList.toggle("ok", okFinal);
+  document.getElementById("ans-final").classList.toggle("err", !okFinal);
+
+  var rc = document.getElementById("results-container");
+  rc.innerHTML = "";
+
+  var steps = [
+    { label: "Formula", ok: okFormula, user: vFormula, correct: t.formulaDisplay },
+    { label: "Aizvieto", ok: okSubst,   user: vSubst,   correct: t.substituteCorrect },
+    { label: "Atbilde",  ok: okFinal,   user: vFinal,   correct: t.answer }
+  ];
+
+  var allOk = okFormula && okSubst && okFinal;
+
+  steps.forEach(function(s) {
+    var div = document.createElement("div");
+    div.className = "res-item " + (s.ok ? "ok" : "err");
+    var label = document.createElement("div");
+    label.className = "res-label";
+    label.textContent = s.label + ": " + s.user;
+    div.appendChild(label);
+    if (s.ok) {
+      var ok = document.createElement("div");
+      ok.textContent = "Pareizi!";
+      div.appendChild(ok);
+    } else {
+      var expl = document.createElement("div");
+      expl.className = "res-expl wrong";
+      expl.textContent = "Pareizi: " + s.correct;
+      div.appendChild(expl);
+    }
+    rc.appendChild(div);
+  });
+
+  // AI explanation if something wrong
+  if (!allOk) {
+    var aiDiv = document.createElement("div");
+    aiDiv.className = "res-item";
+    aiDiv.style.borderColor = "#888";
+    aiDiv.style.background = "#fff8f0";
+    var aiLabel = document.createElement("div");
+    aiLabel.className = "res-label";
+    aiLabel.style.color = "#555";
+    aiLabel.textContent = "Skaidrojums:";
+    aiDiv.appendChild(aiLabel);
+    var aiText = document.createElement("div");
+    aiText.className = "res-expl";
+    aiText.textContent = "Ielādē...";
+    aiDiv.appendChild(aiText);
+    rc.appendChild(aiDiv);
+
+    try {
+      var expl = await getExplanation(t, vFormula, vSubst, vFinal);
+      aiText.textContent = expl;
+    } catch(e) {
+      aiText.textContent = t.explanation || "Atbilde ir " + t.answer + ".";
+    }
+  }
+
+  document.getElementById("assignment").style.display = "none";
+  document.getElementById("results").style.display = "block";
+  checkBtn.disabled = false;
+  checkBtn.innerHTML = "Pārbaudīt";
+  document.getElementById("new-btn").disabled = false;
+}
+
+async function getExplanation(t, vFormula, vSubst, vFinal) {
+  var typeNames = { "A": "izvietojumi (A)", "C": "kombinācijas (C)", "P": "permutācijas (P)" };
+  var prompt = "Tu esi matemātikas skolotājs. Skolēns risināja kombinatorikas uzdevumu.\n" +
+    "Tips: " + (typeNames[t.type] || t.type) + "\n" +
+    "Uzdevums: Aprēķini " + t.symbolText + "\n" +
+    "Skolēna formula: " + vFormula + " (pareizā: " + t.formulaDisplay + ")\n" +
+    "Skolēna aizstāšana: " + vSubst + " (pareizā: " + t.substituteCorrect + ")\n" +
+    "Skolēna atbilde: " + vFinal + " (pareizā: " + t.answer + ")\n\n" +
+    "Uzraksti ĪSU skaidrojumu latviski (2-3 teikumi). Parādi pareizo risinājumu pa soļiem. " +
+    "Izmanto simbolus: · ! ² ³ Nekāds markdown. Tikai vienkāršs teksts.";
+  const text = await callGemini(prompt);
+  return text.replace(/\*\*/g,"").replace(/\*/g,"").replace(/`/g,"").trim();
+}
+
+function goBack() {
+  document.getElementById("results").style.display = "none";
+  document.getElementById("assignment").style.display = "block";
+  ["ans-formula","ans-substitute","ans-final"].forEach(function(id) {
+    document.getElementById(id).classList.remove("ok","err");
+  });
+}
+
+fetchAssignment();
+</script>
+</body>
+</html>
